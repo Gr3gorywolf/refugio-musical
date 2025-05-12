@@ -1,0 +1,19 @@
+#public_requests > div.datatable-toolbar-top.card-body > div > div.col-xl-6.col-lg-5.col-md-12.col-sm-12 > nav{
+  display: none !important;
+}
+
+#public_requests > div.datatable-main.table-responsive > table{
+  min-width: 360px;
+}
+
+#station-schedule-calendar > div{
+  overflow-x: auto;
+}
+
+#content > div > div.card-header.text-bg-primary{
+  display: none;
+}
+
+#station-schedule-calendar > div > div > div > table{
+  min-width: 768px;
+}
