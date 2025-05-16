@@ -1,108 +1,101 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 import { NowPlayingResponse } from "@/types/NowPlayingResponse";
 import { getNowPlaying } from "@/api/endpoints/nowPlayingEndpoints";
 
-interface Song {
-    title: string;
-    artist: string;
-    cover: string;
-    duration: number; // duración en segundos
-}
-
 export function FloatingPlayer() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(80);
+    const [elapsed, setElapsed] = useState(0);
     const [nowPlaying, setNowPlaying] = useState<NowPlayingResponse | undefined>();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
+    const isFetchingRef = useRef(false);
     const fetchNowPlaying = async () => {
+        if (isFetchingRef.current) return;
+
+        isFetchingRef.current = true;
         try {
             const res = await getNowPlaying();
             setNowPlaying(res.data);
+            updateElapsed();
         } catch (error) {
             console.error("Error fetching now playing data:", error);
+        } finally {
+            isFetchingRef.current = false;
         }
     };
 
-    useEffect(() => {
-        fetchNowPlaying();
-        const interval = setInterval(() => {
-            fetchNowPlaying();
-        }, 10000); // Fetch every 10 seconds
+    const updateElapsed = () => {
+        if (nowPlaying?.now_playing) {
+            const duration = nowPlaying.now_playing.duration;
+            const currentTime = Math.floor(Date.now() / 1000);
+            const currentTrackPlayedAt = nowPlaying.now_playing?.played_at ?? currentTime;
+            let updatedElapsed = currentTime - currentTrackPlayedAt;
+            if (updatedElapsed < 0) {
+                updatedElapsed = 0;
+            } else if (updatedElapsed >= duration) {
+                updatedElapsed = duration;
+            }
+            setElapsed(updatedElapsed);
+        }
+    };
+    const updateMediaMetadata = () => {
+        if ("mediaSession" in navigator && nowPlaying?.now_playing?.song) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: nowPlaying.now_playing.song.title + " - " + nowPlaying.station.name,
+                artist: nowPlaying.now_playing.song.artist,
+                album: nowPlaying.station.name,
+                artwork: [
+                    {
+                        src: nowPlaying.now_playing.song.art || "/placeholder.svg",
+                        sizes: "512x512",
+                        type: "image/png",
+                    },
+                ],
+            });
+            navigator.mediaSession.setActionHandler("stop", togglePlayPause);
+            navigator.mediaSession.setActionHandler("play", togglePlayPause);
+            navigator.mediaSession.setActionHandler("pause", togglePlayPause);
+        } else {
+            navigator.mediaSession.metadata = new MediaMetadata({});
+        }
+    };
 
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
-
-    // Lista de canciones de ejemplo para simular cambios
-    const sampleSongs: Song[] = [
-        {
-            title: "Amanecer",
-            artist: "Los Rayos del Sol",
-            cover: "/placeholder.svg?height=60&width=60",
-            duration: 217, // 3:37
-        },
-        {
-            title: "Noche de Verano",
-            artist: "Luna Llena",
-            cover: "/placeholder.svg?height=60&width=60",
-            duration: 243, // 4:03
-        },
-        {
-            title: "Ritmo Latino",
-            artist: "Grupo Tropical",
-            cover: "/placeholder.svg?height=60&width=60",
-            duration: 198, // 3:18
-        },
-        {
-            title: "Melodía Suave",
-            artist: "Voces del Viento",
-            cover: "/placeholder.svg?height=60&width=60",
-            duration: 274, // 4:34
-        },
-    ];
-
-    // Initialize audio element
-    useEffect(() => {
-        audioRef.current = new Audio(nowPlaying?.station?.listen_url);
-        audioRef.current.volume = volume / 100;
-        audioRef.current.autoplay = true;
-
-        return () => {
+    const togglePlayPause = useCallback(() => {
+        let isMediaStatePaused = false;
+        if ("mediaSession" in navigator) {
+            isMediaStatePaused = navigator.mediaSession.playbackState == "paused";
+        }
+        if (isPlaying && !isMediaStatePaused) {
             if (audioRef.current) {
                 audioRef.current.pause();
-                audioRef.current = null;
             }
-            if (progressIntervalRef.current) {
-                clearInterval(progressIntervalRef.current);
+            setIsPlaying(false);
+            if ("mediaSession" in navigator) {
+                navigator.mediaSession.playbackState = "paused";
             }
-        };
-    }, [nowPlaying?.station?.listen_url]);
-
-    // Update volume when changed
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume / 100;
-        }
-    }, [volume]);
-    const togglePlayPause = () => {
-        if (audioRef.current) {
-            if (isPlaying) {
-                audioRef.current.pause();
-            } else {
-                audioRef.current.play().catch((error) => {
+        } else {
+            if (nowPlaying?.station?.listen_url) {
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current.src = ""; // Evita que quede colgado
+                    audioRef.current = null;
+                }
+                const newAudio = new Audio(nowPlaying.station.listen_url);
+                newAudio.volume = volume / 100;
+                newAudio.play().catch((error) => {
                     console.error("Error playing audio:", error);
                 });
+                audioRef.current = newAudio;
+                navigator.mediaSession.playbackState = "playing";
+                setIsPlaying(true);
             }
-            setIsPlaying(!isPlaying);
         }
-    };
+    }, [isPlaying, nowPlaying?.station?.listen_url, volume]);
 
     const handleVolumeChange = (value: number[]) => {
         setVolume(value[0]);
@@ -122,7 +115,65 @@ export function FloatingPlayer() {
     };
 
     // Calculate progress percentage
-    const progressPercentage = ((nowPlaying?.now_playing?.elapsed ?? 0) / (nowPlaying?.now_playing?.duration ?? 0)) * 100;
+    const progressPercentage = (elapsed / (nowPlaying?.now_playing?.duration ?? 0)) * 100;
+
+    useEffect(() => {
+        let metadataInterval: NodeJS.Timeout | null = null;
+        if (isPlaying) {
+            updateMediaMetadata();
+            metadataInterval = setInterval(() => {
+                updateMediaMetadata();
+            }, 4000);
+        }
+
+        return () => {
+            if (metadataInterval) {
+                clearInterval(metadataInterval);
+            }
+        };
+    }, [isPlaying, nowPlaying, togglePlayPause]);
+
+    useEffect(() => {
+        fetchNowPlaying();
+        const interval = setInterval(() => {
+            fetchNowPlaying();
+        }, 12 * 1000);
+
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (nowPlaying) {
+            progressIntervalRef.current = setInterval(() => {
+                updateElapsed();
+            }, 1000);
+        }
+        return () => {
+            if (progressIntervalRef.current) {
+                clearInterval(progressIntervalRef.current);
+            }
+        };
+    }, [nowPlaying]);
+
+    useEffect(() => {
+        audioRef.current = new Audio(nowPlaying?.station?.listen_url);
+        audioRef.current.volume = volume / 100;
+
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, [nowPlaying?.station?.listen_url]);
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume / 100;
+        }
+    }, [volume]);
 
     return (
         <>
@@ -163,6 +214,11 @@ export function FloatingPlayer() {
                         </div>
 
                         <div className="flex flex-col items-end gap-2">
+                             {nowPlaying?.is_online && (
+                                <span className="text-xs text-gray-300">
+                                    {formatTime(elapsed)}/{formatTime(nowPlaying?.now_playing?.duration ?? 0)}
+                                </span>
+                            )}
                             <div className="flex items-center gap-2">
                                 <span className="text-[#03a9f4]">{getVolumeIcon()}</span>
                                 <Slider
@@ -171,16 +227,10 @@ export function FloatingPlayer() {
                                     max={100}
                                     step={1}
                                     onValueChange={handleVolumeChange}
-                                    className="w-8 lg:w-24"
+                                    className="w-12 lg:w-16"
                                     aria-label="Volumen"
                                 />
-                            </div>
-                            {nowPlaying?.is_online && (
-                                <span className="text-xs text-gray-300">
-                                    {formatTime(nowPlaying?.now_playing?.elapsed ?? 0)}/
-                                    {formatTime(nowPlaying?.now_playing?.duration ?? 0)}
-                                </span>
-                            )}
+                            </div> 
                         </div>
                     </div>
                 </div>

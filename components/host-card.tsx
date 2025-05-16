@@ -16,7 +16,7 @@ interface HostCardProps {
 
 export function HostCard({ host }: HostCardProps) {
   return (
-    <div className="bg-[#333333] rounded-lg overflow-hidden transition-transform hover:scale-[1.02]">
+    <div className="bg-[#333333] rounded-lg overflow-hidden transition-transform hover:scale-[1.02] w-full md:w-1/2 lg:w-1/4">
       <div className="relative h-48">
         <Image src={host.image || "/placeholder.svg"} alt={host.name} fill className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#333333] to-transparent" />

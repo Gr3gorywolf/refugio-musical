@@ -73,6 +73,62 @@ export function LiveChat() {
       color: userColors[4],
       timestamp: new Date(Date.now() - 1000 * 30),
     },
+    {
+      id: "6",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+    {
+      id: "7",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+    {
+      id: "8",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+    {
+      id: "9",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+    {
+      id: "10",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+    {
+      id: "11",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+      {
+      id: "12",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
+      {
+      id: "13",
+      username: "AnaSG",
+      text: "Saludos desde Barcelona! 👋",
+      color: userColors[4],
+      timestamp: new Date(Date.now() - 1000 * 30),
+    },
   ])
 
   const [newMessage, setNewMessage] = useState("")
