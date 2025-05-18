@@ -186,7 +186,7 @@ export function FloatingPlayer() {
                 </div>
             </div>
             <div className="fixed top-1 left-0 right-0 z-50 bg-[#333333] border-b border-[#03a9f4]/20 shadow-md">
-                <div className="container mx-auto px-4 py-2">
+                <div className="mx-auto px-4 py-2">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <Button

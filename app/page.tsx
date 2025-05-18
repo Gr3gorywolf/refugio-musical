@@ -15,11 +15,18 @@ export default function Home() {
             id: 1,
             name: "Jose Cabral",
             role: "Locutor matutino",
-            image: "/placeholder.svg?height=200&width=200",
+            image: "/jose-cabral.jpg?height=200&width=200",
             schedule: "Lunes a Viernes, 6:00 - 10:00",
             bio: "Con más de 10 años de experiencia en radio, Jose trae energía y buena musica cada dia",
         },
     ];
+
+    const handleScrollToSection = (id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#424242] text-white">
@@ -43,30 +50,19 @@ export default function Home() {
                         <Link href="#" className="hover:text-[#03a9f4] transition-colors">
                             Inicio
                         </Link>
-                        <Link href="#hosts" className="hover:text-[#03a9f4] transition-colors">
-                            Locutores
-                        </Link>
-                        <Link href="#schedule" className="hover:text-[#03a9f4] transition-colors">
-                            Programación
-                        </Link>
                         <Link href="#request" className="hover:text-[#03a9f4] transition-colors">
                             Solicita tu Canción
                         </Link>
                         <Link href="#songs" className="hover:text-[#03a9f4] transition-colors">
                             Canciones
                         </Link>
-                    </nav>
-                    <Button variant="outline" className="border-[#03a9f4] text-[#03a9f4] hover:bg-[#03a9f4]/10">
-                        <Link
-                            href="https://mytunner.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center"
-                        >
-                            <Radio className="mr-2 h-4 w-4" />
-                            MyTunner
+                        <Link href="#schedule" className="hover:text-[#03a9f4] transition-colors">
+                            Programación
                         </Link>
-                    </Button>
+                        <Link href="#hosts" className="hover:text-[#03a9f4] transition-colors">
+                            Locutores
+                        </Link>
+                    </nav>
                 </div>
             </header>
 
@@ -93,14 +89,16 @@ export default function Home() {
                             <div className="flex flex-wrap gap-4">
                                 <Button
                                     variant="outline"
-                                    className="border-[#03a9f4] text-[#03a9f4] hover:bg-[#03a9f4]/10"
+                                    className="border-[#03a9f4] text-[#03a9f4] hover:text-[#03a9f4]"
                                 >
-                                    <Calendar className="mr-2 h-4 w-4" />
-                                    Ver Programación
+                                    <Link href="#schedule" className="flex items-center">
+                                        <Calendar className="mr-2 h-4 w-4" />
+                                        Ver Programación
+                                    </Link>
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-[#03a9f4] text-[#03a9f4] hover:bg-[#03a9f4]/10"
+                                    className="border-[#03a9f4] text-[#03a9f4] hover:text-[#03a9f4]"
                                 >
                                     <Link
                                         href="https://mytunner.com"
@@ -121,7 +119,7 @@ export default function Home() {
                 </div>
             </section>
 
-              {/* Song Request Section - MOVIDA ANTES DE LA SECCIÓN DE CANCIONES */}
+            {/* Song Request Section - MOVIDA ANTES DE LA SECCIÓN DE CANCIONES */}
             <section id="request" className="py-20 bg-[#383838]">
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
@@ -193,7 +191,7 @@ export default function Home() {
                         ))}
                     </div>
                 </div>
-            </section> 
+            </section>
 
             {/* Features Section */}
             <section className="py-20 bg-[#383838]">
@@ -247,9 +245,10 @@ export default function Home() {
             {/* CTA Section */}
             <section className="py-16 bg-[#03a9f4]">
                 <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-6">¿Listo para una nueva experiencia de radio?</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-6">¿Desea escuchar la radio desde su carro?</h2>
                     <p className="text-white/90 max-w-2xl mx-auto mb-8">
-                        Únete a nuestra comunidad de oyentes y disfruta de contenido exclusivo, concursos y mucho más.
+                        Conecte su disitivo movil a su carro y escuche Radio Cabral en cualquier lugar con la app
+                        MyTunner y reproduzca nuestra radio desde este link
                     </p>
                     <Button className="bg-white text-[#03a9f4] hover:bg-white/90">
                         <Link
