@@ -21,6 +21,7 @@ export function SongHistoryUpcoming() {
         }
     };
 
+
     useEffect(() => {
         const updateCurrentTime = () => {
             const now = new Date();
@@ -95,12 +96,12 @@ export function SongHistoryUpcoming() {
                     <>
                         <TabsContent value="upcoming" className="m-0 max-h-[400px] overflow-y-auto">
                             <div className="divide-y divide-gray-700">
-                                {renderSong(nowPlaying.playing_next.song, false, nowPlaying.playing_next.played_at)}
+                                {nowPlaying.playing_next && renderSong(nowPlaying.playing_next?.song, false, nowPlaying.playing_next?.played_at)}
                             </div>
                         </TabsContent>
                         <TabsContent value="history" className="m-0 max-h-[400px] overflow-y-auto">
                             <div className="divide-y divide-gray-700">
-                                {nowPlaying.song_history.map((song) => renderSong(song.song, true, song?.played_at))}
+                                {nowPlaying?.song_history?.map((song) => renderSong(song.song, true, song?.played_at))}
                             </div>
                         </TabsContent>
                     </>

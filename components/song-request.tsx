@@ -214,7 +214,6 @@ export function SongRequest() {
       </div>
       <iframe src={`${process.env.NEXT_PUBLIC_AZURACAST_URL}/public/radio_cabral/embed-requests?theme=dark`} 
       frameBorder="0" 
-      allowTransparency
       style={{ 
         backgroundColor: "transparent",
         border: "none",
