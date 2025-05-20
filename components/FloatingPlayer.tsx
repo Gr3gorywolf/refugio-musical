@@ -1,35 +1,42 @@
 "use client";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
-import { NowPlayingResponse } from "@/types/NowPlayingResponse";
-import { getNowPlaying } from "@/api/endpoints/nowPlayingEndpoints";
+import { useNowPlaying } from "@/hooks/useNowPlaying";
 
 export function FloatingPlayer() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(80);
     const [elapsed, setElapsed] = useState(0);
-    const [nowPlaying, setNowPlaying] = useState<NowPlayingResponse | undefined>();
+    const { data: nowPlaying } = useNowPlaying();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
-    const isFetchingRef = useRef(false);
-    const fetchNowPlaying = async () => {
-        if (isFetchingRef.current) return;
-
-        isFetchingRef.current = true;
-        try {
-            const res = await getNowPlaying();
-            setNowPlaying(res.data);
-            updateElapsed();
-        } catch (error) {
-            console.error("Error fetching now playing data:", error);
-        } finally {
-            isFetchingRef.current = false;
+    const isLive = nowPlaying?.live?.is_live ?? false;
+    const playingInfo = useMemo(() => {
+        if (isLive) {
+            return {
+                title: "En vivo",
+                artist: nowPlaying?.live?.streamer_name,
+                album: nowPlaying?.station?.name,
+                artwork: nowPlaying?.live?.art || "/placeholder.svg",
+            };
+        } else {
+            return {
+                title: nowPlaying?.now_playing?.song?.title,
+                artist: nowPlaying?.now_playing?.song?.artist,
+                album: nowPlaying?.station?.name,
+                artwork: nowPlaying?.now_playing?.song?.art || "/placeholder.svg",
+            };
         }
-    };
-
+    }, [isLive, nowPlaying]);
     const updateElapsed = () => {
+        if (isLive) {
+            const currentTime = Math.floor(Date.now() / 1000);
+            const currentLivePlayedAt = nowPlaying?.live?.broadcast_start ?? currentTime;
+            setElapsed(currentTime - currentLivePlayedAt);
+            return;
+        }
         if (nowPlaying?.now_playing) {
             const duration = nowPlaying.now_playing.duration;
             const currentTime = Math.floor(Date.now() / 1000);
@@ -44,14 +51,14 @@ export function FloatingPlayer() {
         }
     };
     const updateMediaMetadata = () => {
-        if ("mediaSession" in navigator && nowPlaying?.now_playing?.song) {
+        if ("mediaSession" in navigator && (nowPlaying?.now_playing?.song || nowPlaying?.live)) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: nowPlaying.now_playing.song.title + " - " + nowPlaying.station.name,
-                artist: nowPlaying.now_playing.song.artist,
-                album: nowPlaying.station.name,
+                title: playingInfo.title + " - " + playingInfo.album,
+                artist: playingInfo.artist,
+                album: playingInfo.album,
                 artwork: [
                     {
-                        src: nowPlaying.now_playing.song.art || "/placeholder.svg",
+                        src: playingInfo.artwork,
                         sizes: "512x512",
                         type: "image/png",
                     },
@@ -131,19 +138,7 @@ export function FloatingPlayer() {
                 clearInterval(metadataInterval);
             }
         };
-    }, [isPlaying, nowPlaying, togglePlayPause]);
-
-    useEffect(() => {
-        fetchNowPlaying();
-        const interval = setInterval(() => {
-            fetchNowPlaying();
-        }, 12 * 1000);
-
-        return () => {
-            clearInterval(interval);
-        };
-    }, []);
-
+    }, [isPlaying, nowPlaying,isLive, togglePlayPause]);
     useEffect(() => {
         if (nowPlaying) {
             progressIntervalRef.current = setInterval(() => {
@@ -181,7 +176,7 @@ export function FloatingPlayer() {
                 <div className="flex flex-row gap-2">
                     <div
                         className="h-1 bg-[#03a9f4]"
-                        style={{ width: `${progressPercentage}%`, transition: "width 0.1s linear" }}
+                        style={{ width: `${isLive ? 0 : progressPercentage}%`, transition: "width 0.1s linear" }}
                     ></div>
                 </div>
             </div>
@@ -199,24 +194,28 @@ export function FloatingPlayer() {
 
                             <div className="relative h-12 w-12 rounded-md overflow-hidden">
                                 <img
-                                    src={nowPlaying?.now_playing?.song?.art || "/placeholder.svg"}
+                                    src={playingInfo.artwork}
                                     alt={`${nowPlaying?.now_playing?.song?.title} cover`}
                                     className="object-cover"
                                 />
                             </div>
 
                             <div className="flex flex-col">
-                                <span className="font-medium text-sm text-white">
-                                    {nowPlaying?.now_playing?.song?.title}
-                                </span>
-                                <span className="text-xs text-gray-300">{nowPlaying?.now_playing?.song?.artist}</span>
+                                <span className="font-medium text-sm text-white">{playingInfo.title}</span>
+                                <span className="text-xs text-gray-300">{playingInfo.artist}</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col items-end gap-2">
-                             {nowPlaying?.is_online && (
+                            {nowPlaying?.is_online && (
                                 <span className="text-xs text-gray-300">
-                                    {formatTime(elapsed)}/{formatTime(nowPlaying?.now_playing?.duration ?? 0)}
+                                    {isLive ? (
+                                        formatTime(elapsed)
+                                    ) : (
+                                        <>
+                                            {formatTime(elapsed)}/{formatTime(nowPlaying?.now_playing?.duration ?? 0)}
+                                        </>
+                                    )}
                                 </span>
                             )}
                             <div className="flex items-center gap-2">
@@ -230,7 +229,7 @@ export function FloatingPlayer() {
                                     className="w-12 lg:w-16"
                                     aria-label="Volumen"
                                 />
-                            </div> 
+                            </div>
                         </div>
                     </div>
                 </div>

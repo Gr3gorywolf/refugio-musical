@@ -1,13 +1,16 @@
-import { HostCard } from "@/components/host-card";
+import { HostCard } from "@/components/HostCard";
 import { Button } from "@/components/ui/button";
 import { Radio, Calendar, Headphones, Info, Facebook, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { LiveChat } from "@/components/live-chat";
-import { FloatingPlayer } from "@/components/floating-player";
-import { ProgramSchedule } from "@/components/program-schedule";
-import { SongRequest } from "@/components/song-request";
-import { SongHistoryUpcoming } from "@/components/song-history-upcoming";
+import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
+import { LiveChat } from "@/components/LiveChat";
+import { FloatingPlayer } from "@/components/FloatingPlayer";
+import { ProgramSchedule } from "@/components/ProgramSchedule";
+import { SongRequest } from "@/components/SongRequestForm";
+import { SongHistoryUpcoming } from "@/components/SongHistoryUpcoming";
+import { useMemo } from "react";
+import { ReactQueryProvider } from "@/components/QueryClientProvider";
 
 export default function Home() {
     const hosts = [
@@ -28,11 +31,16 @@ export default function Home() {
         }
     };
 
+    const queryClient = useMemo(() => {
+        return 
+    },[]);
+
     return (
         <div className="min-h-screen bg-[#424242] text-white">
             {/* Floating Player */}
-            <FloatingPlayer />
-
+            <ReactQueryProvider>
+                <FloatingPlayer />
+            </ReactQueryProvider>
             {/* Header - Adjusted to account for floating player */}
             <header className="block z-10 mt-[69px] bg-[#424242] border-b border-[#03a9f4]/20">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -142,7 +150,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Nuestras <span className="text-[#03a9f4]">Canciones</span>
+                            Ponte  <span className="text-[#03a9f4]">Al dia</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             Explora el historial de canciones reproducidas y descubre las próximas que sonarán en
@@ -151,7 +159,9 @@ export default function Home() {
                     </div>
 
                     <div className="max-w-3xl mx-auto">
-                        <SongHistoryUpcoming />
+                        <ReactQueryProvider>
+                            <SongHistoryUpcoming />
+                        </ReactQueryProvider>
                     </div>
                 </div>
             </section>

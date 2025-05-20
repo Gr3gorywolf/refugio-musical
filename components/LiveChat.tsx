@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Send, MessageSquare, Maximize2, Minimize2 } from "lucide-react"
-import { FloatingPlayer } from "@/components/floating-player"
+import { FloatingPlayer } from "@/components/FloatingPlayer"
 import { createPortal } from "react-dom"
 
 interface Message {

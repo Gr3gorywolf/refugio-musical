@@ -2,6 +2,7 @@
 
 import { getNowPlaying } from "@/api/endpoints/nowPlayingEndpoints";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNowPlaying } from "@/hooks/useNowPlaying";
 import { formatTime } from "@/lib/dates";
 import { NowPlayingResponse } from "@/types/NowPlayingResponse";
 import { Song } from "@/types/Song";
@@ -11,15 +12,7 @@ import { useState, useEffect } from "react";
 
 export function SongHistoryUpcoming() {
     const [currentTime, setCurrentTime] = useState<string>("");
-    const [nowPlaying, setNowPlaying] = useState<NowPlayingResponse | undefined>();
-    const fetchNowPlaying = async () => {
-        try {
-            const res = await getNowPlaying();
-            setNowPlaying(res.data);
-        } catch (error) {
-            console.error("Error fetching now playing data:", error);
-        }
-    };
+    const { data: nowPlaying } = useNowPlaying();
 
 
     useEffect(() => {
@@ -35,13 +28,6 @@ export function SongHistoryUpcoming() {
 
         return () => clearInterval(interval);
     }, []);
-
-    useEffect(() => {
-        fetchNowPlaying();
-        const interval = setInterval(fetchNowPlaying, 40000);
-        return () => clearInterval(interval);
-    }, []);
-
     // Renderizar una canción
     const renderSong = (song: Song, isHistory: boolean, time: number) => (
         <div
