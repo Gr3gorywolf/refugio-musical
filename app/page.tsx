@@ -23,18 +23,6 @@ export default function Home() {
             bio: "Con más de 10 años de experiencia en radio, Jose trae energía y buena musica cada dia",
         },
     ];
-
-    const handleScrollToSection = (id: string) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: "smooth" });
-        }
-    };
-
-    const queryClient = useMemo(() => {
-        return 
-    },[]);
-
     return (
         <div className="min-h-screen bg-[#424242] text-white">
             {/* Floating Player */}

@@ -1,157 +1,52 @@
 "use client";
 
 import type React from "react";
-
+import { io, Socket } from "socket.io-client";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, MessageSquare, Maximize2, Minimize2, Facebook, LogOut, Lock } from "lucide-react";
-import { FloatingPlayer } from "@/components/FloatingPlayer";
-import { createPortal } from "react-dom";
-
-interface Message {
-    id: string;
-    username: string;
-    text: string;
-    color: string;
-    timestamp: Date;
-}
-
-interface FacebookUser {
-    id: string;
-    name: string;
-    picture: string;
-    email: string;
-}
-
-// Colores de usuario al estilo Twitch
-const userColors = [
-    "#FF4A80",
-    "#FF7070",
-    "#FF8A5E",
-    "#FFAA44",
-    "#FFCC33",
-    "#FFE500",
-    "#C5E96C",
-    "#00CC8F",
-    "#00CCCC",
-    "#00AAFF",
-    "#0099FF",
-    "#7B5AFF",
-    "#CC66FF",
-    "#FF66CC",
-    "#FF6666",
-];
+import { StorageFacebookInfo } from "@/types/StorageFacebookInfo";
+import { authWithFacebook } from "@/lib/facebookAuth";
+import { getChat, postAuthSocket, postChatLogout, postChatMessage } from "@/api/endpoints/chatApi";
+import { FB_AUTH_KEY, MAX_CHAT_MESSAGES } from "@/lib/constants";
+import { ChatMessage } from "@/types/ChatMessage";
 
 export function LiveChat() {
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: "1",
-            username: "MaríaL",
-            text: "¡Hola a todos! ¿Alguien más escuchando desde Madrid?",
-            color: userColors[0],
-            timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        },
-        {
-            id: "2",
-            username: "CarlosR",
-            text: "¡Me encanta esta canción! 🎵",
-            color: userColors[1],
-            timestamp: new Date(Date.now() - 1000 * 60 * 3),
-        },
-        {
-            id: "3",
-            username: "LauraS",
-            text: "¿Alguien sabe el nombre del artista anterior?",
-            color: userColors[2],
-            timestamp: new Date(Date.now() - 1000 * 60 * 2),
-        },
-        {
-            id: "4",
-            username: "JavierM",
-            text: "Era Alejandro Sanz, su nuevo single",
-            color: userColors[3],
-            timestamp: new Date(Date.now() - 1000 * 60 * 1),
-        },
-        {
-            id: "5",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "6",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "7",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "8",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "9",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "10",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "11",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "12",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-        {
-            id: "13",
-            username: "AnaSG",
-            text: "Saludos desde Barcelona! 👋",
-            color: userColors[4],
-            timestamp: new Date(Date.now() - 1000 * 30),
-        },
-    ]);
-
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const socketRef = useRef<Socket>(null);
     const [newMessage, setNewMessage] = useState("");
-    const [username, setUsername] = useState("Usuario" + Math.floor(Math.random() * 1000));
-    const [userColor] = useState(userColors[Math.floor(Math.random() * userColors.length)]);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const [facebookUser, setFacebookUser] = useState<FacebookUser | null>(null);
+    const [facebookUser, setFacebookUser] = useState<StorageFacebookInfo | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
-    const fullscreenContainerRef = useRef<HTMLDivElement>(null);
     const [isAuthenticating, setIsAuthenticating] = useState(false);
     const [showProfileTooltip, setShowProfileTooltip] = useState(false);
+    const [onlineUsers, setOnlineUsers] = useState(0);
     const profileButtonRef = useRef<HTMLButtonElement>(null);
-    const onlineUsers = messages.length + Math.floor(Math.random() * 15) + 10; // Simulación de usuarios en línea
     const isAuthenticated = !!facebookUser;
-    // Detectar si es dispositivo móvil
+    const authSocket = async (socketId: string) => {
+        try {
+            const authStore = localStorage.getItem(FB_AUTH_KEY);
+            if (!authStore) {
+                throw new Error("No se encontró autenticación de Facebook en localStorage");
+            }
+            await postAuthSocket(socketId);
+            setFacebookUser(JSON.parse(authStore));
+        } catch (error) {
+            console.error("Error al autenticar socket:", error);
+        }
+    };
+
+    const fetchChat = async () => {
+        try {
+            const res = await getChat();
+            setMessages(res.data.messages);
+            setOnlineUsers(res.data.activeUsers ?? 0);
+        } catch (error) {
+            console.error("Error al autenticar socket:", error);
+        }
+    };
     useEffect(() => {
         const checkIfMobile = () => {
             setIsMobile(window.innerWidth < 640);
@@ -164,46 +59,57 @@ export function LiveChat() {
             window.removeEventListener("resize", checkIfMobile);
         };
     }, []);
-
-    // Auto-scroll to bottom when new messages arrive
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
-        if (fullscreenContainerRef.current) {
-            fullscreenContainerRef.current.scrollTop = fullscreenContainerRef.current.scrollHeight;
-        }
     }, [messages, isFullscreen]);
 
-    // Simular autenticación con Facebook
+    useEffect(() => {
+        fetchChat();
+        const handleActiveUsers = (payload: number) => {
+            console.log({ payload });
+            setOnlineUsers(payload);
+        };
+        const handleNewMessage = (payload: ChatMessage) => {
+            setMessages((prevMessages) => {
+                const updatedMessages = [...prevMessages, payload];
+                if (updatedMessages.length > MAX_CHAT_MESSAGES) {
+                    updatedMessages.splice(0, updatedMessages.length - MAX_CHAT_MESSAGES);
+                }
+                return updatedMessages;
+            });
+        };
+        socketRef.current = io({
+            autoConnect: true,
+            transports: ["websocket"],
+        });
+        socketRef.current.on("connect", async () => {
+            const socketId = socketRef.current?.id;
+            const facebookAuth = localStorage.getItem(FB_AUTH_KEY);
+            if (facebookAuth && socketId) {
+                authSocket(socketId);
+            }
+        });
+        socketRef.current.on("active-users", handleActiveUsers);
+        socketRef.current.on("new-message", handleNewMessage);
+        return () => {
+            socketRef.current?.off("active-users", handleActiveUsers);
+            socketRef.current?.off("new-message", handleNewMessage);
+            socketRef.current?.disconnect();
+        };
+    }, []);
+
     const handleFacebookLogin = async () => {
         setIsAuthenticating(true);
 
-        // Simular llamada a la API de Facebook
         try {
-            // En una implementación real, aquí usarías el SDK de Facebook
-            await new Promise((resolve) => setTimeout(resolve, 2000)); // Simular delay de red
-
-            // Datos simulados de usuario de Facebook
-            const mockFacebookUser: FacebookUser = {
-                id: "fb_" + Math.random().toString(36).substr(2, 9),
-                name: "Usuario Facebook",
-                picture: "/placeholder.svg?height=32&width=32",
-                email: "usuario@facebook.com",
-            };
-
-            setFacebookUser(mockFacebookUser);
-            setUsername(mockFacebookUser.name);
-
-            // Mensaje de bienvenida
-            const welcomeMessage: Message = {
-                id: Date.now().toString(),
-                username: "Sistema",
-                text: `¡Bienvenido ${mockFacebookUser.name}! Te has unido al chat.`,
-                color: "#03a9f4",
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, welcomeMessage]);
+            const socketId = socketRef.current?.id;
+            const facebookAuth = await authWithFacebook();
+            localStorage.setItem(FB_AUTH_KEY, JSON.stringify(facebookAuth));
+            if (socketId) {
+                await authSocket(socketId);
+            }
         } catch (error) {
             console.error("Error al autenticar con Facebook:", error);
         } finally {
@@ -211,10 +117,16 @@ export function LiveChat() {
         }
     };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         setFacebookUser(null);
-        setUsername("Usuario" + Math.floor(Math.random() * 1000));
         setShowProfileTooltip(false);
+        if (socketRef.current) {
+            postChatLogout(socketRef.current?.id ?? "")
+                .then(() => {
+                    localStorage.setItem(FB_AUTH_KEY, "");
+                })
+                .catch((error) => {});
+        }
     };
 
     // Bloquear el scroll del body cuando está en pantalla completa
@@ -229,18 +141,13 @@ export function LiveChat() {
         };
     }, [isFullscreen]);
 
-    const handleSendMessage = () => {
+    const handleSendMessage = async () => {
         if (newMessage.trim() === "") return;
-
-        const message: Message = {
-            id: Date.now().toString(),
-            username: username,
-            text: newMessage,
-            color: userColor,
-            timestamp: new Date(),
-        };
-
-        setMessages([...messages, message]);
+        try {
+            await postChatMessage(socketRef.current?.id || "", newMessage);
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+        }
         setNewMessage("");
     };
 
@@ -261,7 +168,7 @@ export function LiveChat() {
             {messages.map((message) => (
                 <div key={message.id} className="leading-tight">
                     <span className="text-gray-400 text-xs mr-1">
-                        {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
                     <span style={{ color: message.color }} className="font-semibold">
                         {message.username}:{" "}
@@ -279,13 +186,13 @@ export function LiveChat() {
                 <div className="flex items-center gap-3 mb-3">
                     <div className="relative h-10 w-10 rounded-full overflow-hidden">
                         <img
-                            src={facebookUser.picture || "/placeholder.svg"}
-                            alt={facebookUser.name}
+                            src={facebookUser.user.picture.data.url || "/placeholder.svg"}
+                            alt={facebookUser.user.name}
                             className="w-full h-full object-cover"
                         />
                     </div>
                     <div>
-                        <p className="text-white font-medium text-sm">{facebookUser.name}</p>
+                        <p className="text-white font-medium text-sm">{facebookUser.user.name}</p>
                         <div className="flex items-center gap-1">
                             <span className="text-[#03a9f4] text-xs" title="Usuario verificado">
                                 ✓
@@ -346,16 +253,16 @@ export function LiveChat() {
                         handleSendMessage();
                     }}
                 >
-                    <div className="relative">
+                    <div className="relative mb-[-3px]">
                         <button
                             ref={profileButtonRef}
                             type="button"
                             onClick={toggleProfileTooltip}
-                            className="relative h-8 w-8 rounded-full overflow-hidden hover:ring-2 hover:ring-[#03a9f4] transition-all"
+                            className="relative h-7 w-7  rounded-full overflow-hidden hover:ring-2 hover:ring-[#03a9f4] transition-all"
                         >
                             <img
-                                src={facebookUser?.picture || "/placeholder.svg"}
-                                alt={facebookUser?.name || "Usuario"}
+                                src={facebookUser.user.picture.data.url || "/placeholder.svg"}
+                                alt={facebookUser.user.name || "Usuario"}
                                 className="w-full h-full object-cover"
                             />
                         </button>
