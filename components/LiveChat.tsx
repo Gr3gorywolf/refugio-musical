@@ -194,7 +194,7 @@ export function LiveChat() {
                     <div>
                         <p className="text-white font-medium text-sm">{facebookUser.user.name}</p>
                         <div className="flex items-center gap-1">
-                            <span className="text-[#03a9f4] text-xs" title="Usuario verificado">
+                            <span className="text-[var(--primary-color)] text-xs" title="Usuario verificado">
                                 ✓
                             </span>
                             <span className="text-gray-400 text-xs">Verificado</span>
@@ -258,7 +258,7 @@ export function LiveChat() {
                             ref={profileButtonRef}
                             type="button"
                             onClick={toggleProfileTooltip}
-                            className="relative h-7 w-7  rounded-full overflow-hidden hover:ring-2 hover:ring-[#03a9f4] transition-all"
+                            className="relative h-7 w-7  rounded-full overflow-hidden hover:ring-2 hover:ring-[var(--primary-color)] transition-all"
                         >
                             <img
                                 src={facebookUser.user.picture.data.url || "/placeholder.svg"}
@@ -272,9 +272,9 @@ export function LiveChat() {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Enviar un mensaje"
-                        className="bg-[#18181b] border-gray-700 text-white text-sm h-8 focus-visible:ring-[#03a9f4] flex-1"
+                        className="bg-[#18181b] border-gray-700 text-white text-sm h-8 focus-visible:ring-[var(--primary-color)] flex-1"
                     />
-                    <Button type="submit" size="sm" className="bg-[#03a9f4] hover:bg-[#0288d1] h-8 px-2">
+                    <Button type="submit" size="sm" className="bg-[var(--primary-color)] hover:bg-[#0288d1] h-8 px-2">
                         <Send className="h-4 w-4" />
                     </Button>
                 </form>
@@ -304,10 +304,10 @@ export function LiveChat() {
     return renderChatWrapper(
         <>
             <div className="bg-[#1f1f23] p-2 flex items-center">
-                <MessageSquare className="h-4 w-4 mr-2 text-[#03a9f4]" />
+                <MessageSquare className="h-4 w-4 mr-2 text-[var(--primary-color)]" />
                 <h3 className="font-bold text-sm">CHAT EN VIVO</h3>
                 <div className="ml-auto flex items-center gap-2">
-                    <div className="bg-[#03a9f4] text-white text-xs px-2 py-0.5 rounded-full">
+                    <div className="bg-[var(--primary-color)] text-white text-xs px-2 py-0.5 rounded-full">
                         {onlineUsers} en línea
                     </div>
                     <Button

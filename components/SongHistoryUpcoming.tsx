@@ -43,7 +43,7 @@ export function SongHistoryUpcoming() {
                 <p className="text-xs text-gray-300 truncate">{song.artist}</p>
             </div>
 
-            <div className="flex items-center gap-1 text-xs text-[#03a9f4]">
+            <div className="flex items-center gap-1 text-xs text-[var(--primary-color)]">
                 {isHistory ? <History className="h-3 w-3" /> : <Calendar className="h-3 w-3" />}
                 <span>{formatTime(time)}</span>
             </div>
@@ -53,10 +53,10 @@ export function SongHistoryUpcoming() {
     return (
         <div className="bg-[#333333] rounded-lg overflow-hidden">
             <div className="flex items-center gap-2 p-4 border-b border-gray-700">
-                <Music className="h-5 w-5 text-[#03a9f4]" />
+                <Music className="h-5 w-5 text-[var(--primary-color)]" />
                 <h3 className="text-xl font-bold">Canciones</h3>
                 <div className="ml-auto flex items-center gap-1 text-xs bg-[#424242] px-2 py-1 rounded-full">
-                    <Clock className="h-3 w-3 text-[#03a9f4]" />
+                    <Clock className="h-3 w-3 text-[var(--primary-color)]" />
                     <span>Ahora: {currentTime}</span>
                 </div>
             </div>
@@ -65,14 +65,14 @@ export function SongHistoryUpcoming() {
                 <TabsList className="grid grid-cols-2 p-0 bg-[#2a2a2a]">
                     <TabsTrigger
                         value="upcoming"
-                        className="data-[state=active]:bg-[#03a9f4] data-[state=active]:text-white rounded-none py-3"
+                        className="data-[state=active]:bg-[var(--primary-color)] data-[state=active]:text-white rounded-none py-3"
                     >
                         <Calendar className="h-4 w-4 mr-2" />
                         Próxima
                     </TabsTrigger>
                     <TabsTrigger
                         value="history"
-                        className="data-[state=active]:bg-[#03a9f4] data-[state=active]:text-white rounded-none py-3"
+                        className="data-[state=active]:bg-[var(--primary-color)] data-[state=active]:text-white rounded-none py-3"
                     >
                         <History className="h-4 w-4 mr-2" />
                         Historial

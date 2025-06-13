@@ -175,18 +175,18 @@ export function FloatingPlayer() {
             <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-800">
                 <div className="flex flex-row gap-2">
                     <div
-                        className="h-1 bg-[#03a9f4]"
+                        className="h-1 bg-[var(--primary-color)]"
                         style={{ width: `${isLive ? 0 : progressPercentage}%`, transition: "width 0.1s linear" }}
                     ></div>
                 </div>
             </div>
-            <div className="fixed top-1 left-0 right-0 z-50 bg-[#333333] border-b border-[#03a9f4]/20 shadow-md">
+            <div className="fixed top-1 left-0 right-0 z-50 bg-[#333333] border-b border-none shadow-md">
                 <div className="mx-auto px-4 py-2">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <Button
                                 onClick={togglePlayPause}
-                                className="bg-[#03a9f4] hover:bg-[#0288d1] min-h-10  min-w-10 rounded-full p-0"
+                                className="bg-[var(--primary-color)] hover:bg-[var(--primary-dark-color)] min-h-10  min-w-10 rounded-full p-0"
                                 aria-label={isPlaying ? "Pausar" : "Reproducir"}
                             >
                                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
@@ -219,7 +219,7 @@ export function FloatingPlayer() {
                                 </span>
                             )}
                             <div className="flex items-center gap-2">
-                                <span className="text-[#03a9f4]">{getVolumeIcon()}</span>
+                                <span className="text-[var(--primary-color)]">{getVolumeIcon()}</span>
                                 <Slider
                                     value={[volume]}
                                     min={0}

@@ -209,7 +209,7 @@ export function SongRequest() {
   return (
     <div className="bg-[#333333] rounded-lg md:px-4 py-4 px-2 ">
       <div className="flex items-center gap-2 mb-4">
-        <Music className="h-5 w-5 text-[#03a9f4]" />
+        <Music className="h-5 w-5 text-[var(--primary-color)]" />
         <h3 className="text-xl font-bold">Solicita tu Canción</h3>
       </div>
       <iframe src={`${process.env.NEXT_PUBLIC_AZURACAST_URL}/public/radio_cabral/embed-requests?theme=dark`} 

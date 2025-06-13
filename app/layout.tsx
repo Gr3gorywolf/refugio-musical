@@ -3,7 +3,7 @@ import "../styles/globals.css";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-    title: "Radio Cabral",
+    title: "Refugio Musical",
     description: "La mejor música y entretenimiento en vivo",
     generator: "Next.js",
     icons: {

@@ -80,25 +80,25 @@ export function RadioPlayer() {
   return (
     <div className="flex flex-col">
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-[#03a9f4]">EN VIVO</h3>
+        <h3 className="text-xl font-bold text-[var(--primary-color)]">EN VIVO</h3>
         <div className="mt-4 space-y-1">
           <p className="text-lg font-medium">{currentTrack.title}</p>
           <p className="text-sm text-gray-300">{currentTrack.artist}</p>
-          <p className="text-xs text-[#03a9f4]">{currentTrack.show}</p>
+          <p className="text-xs text-[var(--primary-color)]">{currentTrack.show}</p>
         </div>
       </div>
 
       <div className="flex items-center justify-between bg-[#2c2c2c] p-4 rounded-lg">
         <Button
           onClick={togglePlayPause}
-          className="bg-[#03a9f4] hover:bg-[#0288d1] h-12 w-12 rounded-full"
+          className="bg-[var(--primary-color)] hover:bg-[#0288d1] h-12 w-12 rounded-full"
           aria-label={isPlaying ? "Pausar" : "Reproducir"}
         >
           {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
         </Button>
 
         <div className="flex items-center gap-2 flex-1 max-w-[200px] ml-4">
-          <span className="text-[#03a9f4]">{getVolumeIcon()}</span>
+          <span className="text-[var(--primary-color)]">{getVolumeIcon()}</span>
           <Slider
             value={[volume]}
             min={0}
@@ -113,7 +113,7 @@ export function RadioPlayer() {
 
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-400">
-          Powered by <span className="text-[#03a9f4]">AzuraCast</span>
+          Powered by <span className="text-[var(--primary-color)]">AzuraCast</span>
         </p>
       </div>
     </div>

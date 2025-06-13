@@ -12,6 +12,19 @@ body {
   }
 }
 html { scroll-behavior: smooth; }
+:root{
+  --primary-color: #f44336;
+  --primary-dark-color: #e53935;
+}
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+.border-primary {
+  border-color: var(--primary-color) !important;
+}
+.text-primary {
+  color: var(--primary-color) !important;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

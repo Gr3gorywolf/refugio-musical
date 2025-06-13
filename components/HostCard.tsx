@@ -24,7 +24,7 @@ export function HostCard({ host }: HostCardProps) {
 
       <div className="p-4">
         <h3 className="text-xl font-bold">{host.name}</h3>
-        <p className="text-[#03a9f4] text-sm mb-2">{host.role}</p>
+        <p className="text-[var(--primary-color)] text-sm mb-2">{host.role}</p>
 
         <div className="flex items-center text-gray-300 text-xs mb-3">
           <Calendar className="h-3 w-3 mr-1" />

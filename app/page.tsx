@@ -30,32 +30,32 @@ export default function Home() {
                 <FloatingPlayer />
             </ReactQueryProvider>
             {/* Header - Adjusted to account for floating player */}
-            <header className="block z-10 mt-[69px] bg-[#424242] border-b border-[#03a9f4]/20">
+            <header className="block z-10 mt-[68.3px] bg-[var(--primary-color)] border-b border-none">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Image
-                            src="/logo-circular.png?height=38&width=38"
-                            alt="Radio cabral logo"
-                            width={38}
-                            height={38}
+                            src="/logo-simple.png?height=40&width=40"
+                            alt="Refugio Musical logo"
+                            width={40}
+                            height={40}
                             className="object-cover"
                         />
-                        <span className="text-xl font-bold">Radio Cabral</span>
+                        <span className="text-xl font-bold">Refugio Musical</span>
                     </div>
                     <nav className="hidden md:flex items-center gap-6">
-                        <Link href="#" className="hover:text-[#03a9f4] transition-colors">
+                        <Link href="#" className="hover:text-[var(--primary-color)] transition-colors">
                             Inicio
                         </Link>
-                        <Link href="#request" className="hover:text-[#03a9f4] transition-colors">
+                        <Link href="#request" className="hover:text-[var(--primary-color)] transition-colors">
                             Solicita tu Canción
                         </Link>
-                        <Link href="#songs" className="hover:text-[#03a9f4] transition-colors">
+                        <Link href="#songs" className="hover:text-[var(--primary-color)] transition-colors">
                             Canciones
                         </Link>
-                        <Link href="#schedule" className="hover:text-[#03a9f4] transition-colors">
+                        <Link href="#schedule" className="hover:text-[var(--primary-color)] transition-colors">
                             Programación
                         </Link>
-                        <Link href="#hosts" className="hover:text-[#03a9f4] transition-colors">
+                        <Link href="#hosts" className="hover:text-[var(--primary-color)] transition-colors">
                             Locutores
                         </Link>
                     </nav>
@@ -66,7 +66,7 @@ export default function Home() {
             <section className="relative pt-8 pb-8 md:pt-32 md:pb-20 overflow-hidden">
                 <div className="absolute inset-0 z-0 opacity-20">
                     <Image
-                        src="/placeholder.svg?height=600&width=1200"
+                        src="/banner.png?height=800&width=1200"
                         alt="Radio background"
                         fill
                         className="object-cover"
@@ -76,7 +76,7 @@ export default function Home() {
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                         <div className="space-y-6">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                                Tu <span className="text-[#03a9f4]">Radio</span> Favorita En Cualquier Momento
+                                Tu <span className="text-[var(--primary-color)]">Radio</span> Favorita En Cualquier Momento
                             </h1>
                             <p className="text-lg text-gray-300 max-w-lg">
                                 Música, entretenimiento y las mejores conversaciones. Sintoniza ahora y sé parte de
@@ -85,7 +85,7 @@ export default function Home() {
                             <div className="flex flex-wrap gap-4">
                                 <Button
                                     variant="outline"
-                                    className="border-[#03a9f4] text-[#03a9f4] hover:text-[#03a9f4]"
+                                    className="border-[var(--primary-color)] text-[var(--primary-color)] hover:text-[var(--primary-color)]"
                                 >
                                     <Link href="#schedule" className="flex items-center">
                                         <Calendar className="mr-2 h-4 w-4" />
@@ -94,7 +94,7 @@ export default function Home() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-[#03a9f4] text-[#03a9f4] hover:text-[#03a9f4]"
+                                    className="border-[var(--primary-color)] text-[var(--primary-color)] hover:text-[var(--primary-color)]"
                                 >
                                     <Link
                                         href="https://mytunner.com"
@@ -120,7 +120,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Solicita tu <span className="text-[#03a9f4]">Canción</span>
+                            Solicita tu <span className="text-[var(--primary-color)]">Canción</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             ¿Quieres escuchar tu canción favorita? Solicítala y la pondremos al aire.
@@ -138,7 +138,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Ponte  <span className="text-[#03a9f4]">Al dia</span>
+                            Ponte  <span className="text-[var(--primary-color)]">Al dia</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             Explora el historial de canciones reproducidas y descubre las próximas que sonarán en
@@ -159,7 +159,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Nuestra <span className="text-[#03a9f4]">Programación</span>
+                            Nuestra <span className="text-[var(--primary-color)]">Programación</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             Descubre todos nuestros programas y no te pierdas tus favoritos.
@@ -175,7 +175,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Nuestros <span className="text-[#03a9f4]">Locutores</span>
+                            Nuestros <span className="text-[var(--primary-color)]">Locutores</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             Conoce a las voces que te acompañan día a día con la mejor música, noticias y
@@ -196,17 +196,17 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Por Qué <span className="text-[#03a9f4]">Elegirnos</span>
+                            Por Qué <span className="text-[var(--primary-color)]">Elegirnos</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
-                            Descubre lo que hace a Radio Cabral la mejor opción para mantenerte entretenido e informado.
+                            Descubre lo que hace a Refugio Musical la mejor opción para mantenerte entretenido e informado.
                         </p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
                         <div className="bg-[#333333] p-6 rounded-lg">
-                            <div className="bg-[#03a9f4]/10 p-3 rounded-full w-fit mb-4">
-                                <Headphones className="h-6 w-6 text-[#03a9f4]" />
+                            <div className="bg-[var(--primary-color)]/10 p-3 rounded-full w-fit mb-4">
+                                <Headphones className="h-6 w-6 text-[var(--primary-color)]" />
                             </div>
                             <h3 className="text-xl font-bold mb-2">Calidad de Audio</h3>
                             <p className="text-gray-300">
@@ -216,8 +216,8 @@ export default function Home() {
                         </div>
 
                         <div className="bg-[#333333] p-6 rounded-lg">
-                            <div className="bg-[#03a9f4]/10 p-3 rounded-full w-fit mb-4">
-                                <Calendar className="h-6 w-6 text-[#03a9f4]" />
+                            <div className="bg-[var(--primary-color)]/10 p-3 rounded-full w-fit mb-4">
+                                <Calendar className="h-6 w-6 text-[var(--primary-color)]" />
                             </div>
                             <h3 className="text-xl font-bold mb-2">Programación Variada</h3>
                             <p className="text-gray-300">
@@ -227,8 +227,8 @@ export default function Home() {
                         </div>
 
                         <div className="bg-[#333333] p-6 rounded-lg">
-                            <div className="bg-[#03a9f4]/10 p-3 rounded-full w-fit mb-4">
-                                <Info className="h-6 w-6 text-[#03a9f4]" />
+                            <div className="bg-[var(--primary-color)]/10 p-3 rounded-full w-fit mb-4">
+                                <Info className="h-6 w-6 text-[var(--primary-color)]" />
                             </div>
                             <h3 className="text-xl font-bold mb-2">Siempre Actualizado</h3>
                             <p className="text-gray-300">
@@ -241,14 +241,14 @@ export default function Home() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-16 bg-[#03a9f4]">
+            <section className="py-16 bg-[var(--primary-color)]">
                 <div className="container mx-auto px-4 text-center">
                     <h2 className="text-3xl md:text-4xl font-bold mb-6">¿Desea escuchar la radio desde su carro?</h2>
                     <p className="text-white/90 max-w-2xl mx-auto mb-8">
-                        Conecte su disitivo movil a su carro y escuche Radio Cabral en cualquier lugar con la app
+                        Conecte su disitivo movil a su carro y escuche Refugio Musical en cualquier lugar con la app
                         MyTunner y reproduzca nuestra radio desde este link
                     </p>
-                    <Button className="bg-white text-[#03a9f4] hover:bg-white/90">
+                    <Button className="bg-white text-[var(--primary-color)] hover:bg-white/90">
                         <Link
                             href="https://mytunner.com"
                             target="_blank"
@@ -268,20 +268,20 @@ export default function Home() {
                     <div className="grid md:grid-cols-4 gap-8">
                         <div>
                             <div className="flex items-center gap-2 mb-4">
-                                <Radio className="h-6 w-6 text-[#03a9f4]" />
-                                <span className="text-lg font-bold">Radio Cabral</span>
+                                <Radio className="h-6 w-6 text-[var(--primary-color)]" />
+                                <span className="text-lg font-bold">Refugio Musical</span>
                             </div>
                             <p className="text-gray-400 mb-4">
                                 Tu estación de radio favorita con la mejor música y contenido.
                             </p>
                             <div className="flex gap-4">
-                                <Link href="#" className="text-[#03a9f4] hover:text-white transition-colors">
+                                <Link href="#" className="text-[var(--primary-color)] hover:text-white transition-colors">
                                     <Facebook className="h-5 w-5" />
                                 </Link>
-                                <Link href="#" className="text-[#03a9f4] hover:text-white transition-colors">
+                                <Link href="#" className="text-[var(--primary-color)] hover:text-white transition-colors">
                                     <Twitter className="h-5 w-5" />
                                 </Link>
-                                <Link href="#" className="text-[#03a9f4] hover:text-white transition-colors">
+                                <Link href="#" className="text-[var(--primary-color)] hover:text-white transition-colors">
                                     <Instagram className="h-5 w-5" />
                                 </Link>
                             </div>
@@ -291,14 +291,14 @@ export default function Home() {
                             <h3 className="text-lg font-bold mb-4">Enlaces Rápidos</h3>
                             <ul className="space-y-2">
                                 <li>
-                                    <Link href="#" className="text-gray-400 hover:text-[#03a9f4] transition-colors">
+                                    <Link href="#" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
                                         Inicio
                                     </Link>
                                 </li>
                                 <li>
                                     <Link
                                         href="#hosts"
-                                        className="text-gray-400 hover:text-[#03a9f4] transition-colors"
+                                        className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"
                                     >
                                         Locutores
                                     </Link>
@@ -306,7 +306,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#schedule"
-                                        className="text-gray-400 hover:text-[#03a9f4] transition-colors"
+                                        className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"
                                     >
                                         Programación
                                     </Link>
@@ -314,7 +314,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#request"
-                                        className="text-gray-400 hover:text-[#03a9f4] transition-colors"
+                                        className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"
                                     >
                                         Solicita tu Canción
                                     </Link>
@@ -322,7 +322,7 @@ export default function Home() {
                                 <li>
                                     <Link
                                         href="#songs"
-                                        className="text-gray-400 hover:text-[#03a9f4] transition-colors"
+                                        className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"
                                     >
                                         Canciones
                                     </Link>
@@ -332,7 +332,7 @@ export default function Home() {
                                         href="https://mytunner.com"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-gray-400 hover:text-[#03a9f4] transition-colors"
+                                        className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"
                                     >
                                         MyTunner
                                     </Link>
@@ -357,7 +357,7 @@ export default function Home() {
                     </div>
 
                     <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500">
-                        <p>&copy; {new Date().getFullYear()} Radio Cabral. Todos los derechos reservados.</p>
+                        <p>&copy; {new Date().getFullYear()} Refugio Musical. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </footer>

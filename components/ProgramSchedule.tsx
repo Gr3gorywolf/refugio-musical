@@ -19,7 +19,7 @@ export function ProgramSchedule() {
     return (
         <div className="bg-[#333333] rounded-lg p-4">
             <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-5 w-5 text-[#03a9f4]" />
+                <Calendar className="h-5 w-5 text-[var(--primary-color)]" />
                 <h3 className="text-xl font-bold">Programación Semanal</h3>
             </div>
 
