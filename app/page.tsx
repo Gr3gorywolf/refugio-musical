@@ -30,7 +30,7 @@ export default function Home() {
                 <FloatingPlayer />
             </ReactQueryProvider>
             {/* Header - Adjusted to account for floating player */}
-            <header className="block z-10 mt-[68.3px] bg-[var(--primary-color)] border-b border-none">
+            <header className="block z-10 mt-[68px] bg-[var(--primary-color)] border-b border-none">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Image
@@ -63,13 +63,13 @@ export default function Home() {
             </header>
 
             {/* Hero Section - Adjusted for floating player */}
-            <section className="relative pt-8 pb-8 md:pt-32 md:pb-20 overflow-hidden">
+            <section className="relative pt-8 pb-8 md:pt-40 md:pb-40 overflow-hidden">
                 <div className="absolute inset-0 z-0 opacity-20">
                     <Image
-                        src="/banner.png?height=800&width=1200"
+                        src="/banner.png?height=600&width=1200"
                         alt="Radio background"
                         fill
-                        className="object-cover"
+                        className="object-cover md:object-cover "
                     />
                 </div>
                 <div className="container mx-auto px-4 relative z-1">
