@@ -30,7 +30,7 @@ export function ProgramSchedule() {
                     backgroundColor: "transparent",
                     border: "none",
                     width: "100%",
-                    height: "1146px",
+                    height: "1210px",
                 }}
             ></iframe>
         </div>

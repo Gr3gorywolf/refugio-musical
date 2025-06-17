@@ -18,7 +18,7 @@ yarn-error.log*
 
 # env files
 .env*
-
+chat-data.json
 # vercel
 .vercel
 

@@ -12,7 +12,11 @@ import { getChat, postAuthSocket, postChatLogout, postChatMessage } from "@/api/
 import { FB_AUTH_KEY, MAX_CHAT_MESSAGES } from "@/lib/constants";
 import { ChatMessage } from "@/types/ChatMessage";
 
-export function LiveChat() {
+interface props {
+    exclusive?: boolean;
+}
+
+export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const socketRef = useRef<Socket>(null);
     const [newMessage, setNewMessage] = useState("");
@@ -225,7 +229,7 @@ export function LiveChat() {
                     <Button
                         onClick={handleFacebookLogin}
                         disabled={isAuthenticating}
-                        className="bg-[#1877f2] hover:bg-[#166fe5] text-white font-medium"
+                        className="bg-[var(--primary-color)] hover:bg-[var(--primary-color)] text-white font-medium"
                         size="sm"
                     >
                         {isAuthenticating ? (
@@ -283,6 +287,11 @@ export function LiveChat() {
     };
 
     const renderChatWrapper = (children: React.JSX.Element) => {
+        if (exclusive) {
+            return (
+                <div className="h-[100vh] w-[100vw] fixed top-0 left-0 z-50 bg-[#0e0e10] flex flex-col">{children}</div>
+            );
+        }
         if (isFullscreen) {
             return (
                 <div
@@ -305,19 +314,21 @@ export function LiveChat() {
         <>
             <div className="bg-[#1f1f23] p-2 flex items-center">
                 <MessageSquare className="h-4 w-4 mr-2 text-[var(--primary-color)]" />
-                <h3 className="font-bold text-sm">CHAT EN VIVO</h3>
+                <h3 className="font-bold text-sm text-white">CHAT EN VIVO</h3>
                 <div className="ml-auto flex items-center gap-2">
                     <div className="bg-[var(--primary-color)] text-white text-xs px-2 py-0.5 rounded-full">
                         {onlineUsers} en línea
                     </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={toggleFullscreen}
-                        className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-[#333]"
-                    >
-                        {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-4 w-4" />}
-                    </Button>
+                    {!exclusive && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={toggleFullscreen}
+                            className="h-7 w-7 p-0 text-gray-400 hover:text-white hover:bg-[#333]"
+                        >
+                            {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-4 w-4" />}
+                        </Button>
+                    )}
                 </div>
             </div>
 
@@ -325,4 +336,4 @@ export function LiveChat() {
             {renderChatInput()}
         </>
     );
-}
+};

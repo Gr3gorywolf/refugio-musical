@@ -34,13 +34,13 @@ export default function Home() {
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Image
-                            src="/logo-simple.png?height=40&width=40"
+                            src="/logo-simple.png?height=50&width=50"
                             alt="Refugio Musical logo"
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                             className="object-cover"
                         />
-                        <span className="text-xl font-bold">Refugio Musical</span>
+                        <span className="text-2xl font-bold mt-1">Refugio Musical</span>
                     </div>
                     <nav className="hidden md:flex items-center gap-6">
                         <Link href="#" className="hover:text-[var(--primary-color)] transition-colors">

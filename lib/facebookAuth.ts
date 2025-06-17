@@ -35,6 +35,8 @@ export const authWithFacebook = () => {
 
 
                     // Guarda token en estado, úsalo para enviar mensajes y autenticarte
+                }else{
+                     reject("Failed to authenticate with Facebook");
                 }
             },
             { scope: "public_profile,email" }
