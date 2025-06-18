@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nodemon server.js",
-    "build": "tsup custom-server.ts --format cjs --target node20 --out-dir .custom-server && next build ",
-    "start": "node ./.custom-server/custom-server.js",
+    "build": "next build ",
+    "start": "NODE_ENV=production ts-node --project tsconfig.server.json custom-server.ts",
     "lint": "next lint"
   },
   "dependencies": {
