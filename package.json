@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "build": "tsup custom-server.ts --format cjs --target node20 --out-dir .custom-server && next build ",
-    "start": "node ./custom-server/server.js",
+    "start": "node ./custom-server/custom-server.js",
     "lint": "next lint"
   },
   "dependencies": {
