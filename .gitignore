@@ -5,6 +5,7 @@
 /azuracast
 # next.js
 /.next/
+/.custom-server/
 /out/
 
 # production

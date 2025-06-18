@@ -48,6 +48,16 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           source: ".next"
           target: "${{ secrets.TARGET_PATH }}"
+
+      - name: Copy compiled server files to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: ".custom-server"
+          target: "${{ secrets.TARGET_PATH }}"
+
       - name: Start nextjs app
         uses: appleboy/ssh-action@master
         with:
