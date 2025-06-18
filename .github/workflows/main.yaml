@@ -19,7 +19,7 @@ jobs:
           node-version: 20.19.0
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Decode .env from base64
         run: |
