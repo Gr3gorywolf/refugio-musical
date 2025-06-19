@@ -186,7 +186,7 @@ export function FloatingPlayer() {
                         <div className="flex items-center gap-3">
                             <Button
                                 onClick={togglePlayPause}
-                                className="bg-[var(--primary-color)] hover:bg-[var(--primary-dark-color)] min-h-10  min-w-10 rounded-full p-0"
+                                className="bg-[var(--primary-color)] hover:bg-[var(--primary-dark-color)] text-white min-h-10  min-w-10 rounded-full p-0"
                                 aria-label={isPlaying ? "Pausar" : "Reproducir"}
                             >
                                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}

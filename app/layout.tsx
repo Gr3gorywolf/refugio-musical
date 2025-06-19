@@ -19,19 +19,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-                <Script async defer src="https://connect.facebook.net/en_US/sdk.js"></Script>
-                <Script>
-                    {` 
-                    window.fbAsyncInit = function() {
-                        FB.init({
-                            appId      : ${process.env.NEXT_PUBLIC_FACEBOOK_APP_ID},
-                            cookie     : true,
-                            xfbml      : true,
-                            version    : 'v19.0'
-                        });
-                        };`}
-                </Script>
+        <html lang="en" className="dark">
             <body>{children}</body>
         </html>
     );

@@ -24,7 +24,7 @@ export function ProgramSchedule() {
             </div>
 
             <iframe
-                src={`${process.env.NEXT_PUBLIC_AZURACAST_URL}/public/radio_cabral/schedule/embed?theme=dark`}
+                src={`${process.env.NEXT_PUBLIC_AZURACAST_URL}/public/${process.env.NEXT_PUBLIC_STATION_NAME}/schedule/embed?theme=dark`}
                 frameBorder="0"
                 style={{
                     backgroundColor: "transparent",

@@ -85,16 +85,16 @@ export default function Home() {
                             <div className="flex flex-wrap gap-4">
                                 <Button
                                     variant="outline"
-                                    className="border-[var(--primary-color)] text-[var(--primary-color)] hover:text-[var(--primary-color)]"
+                                    className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:text-[var(--primary-color)]"
                                 >
-                                    <Link href="#schedule" className="flex items-center">
+                                    <Link href="#schedule" className="flex items-center b">
                                         <Calendar className="mr-2 h-4 w-4" />
                                         Ver Programación
                                     </Link>
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-[var(--primary-color)] text-[var(--primary-color)] hover:text-[var(--primary-color)]"
+                                    className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:text-[var(--primary-color)]"
                                 >
                                     <Link
                                         href="https://mytunner.com"
