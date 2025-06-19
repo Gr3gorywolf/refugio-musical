@@ -11,6 +11,7 @@ import { authWithFacebook } from "@/lib/facebookAuth";
 import { getChat, postAuthSocket, postChatLogout, postChatMessage } from "@/api/endpoints/chatApi";
 import { FB_AUTH_KEY, MAX_CHAT_MESSAGES } from "@/lib/constants";
 import { ChatMessage } from "@/types/ChatMessage";
+import { AnonymousLogin } from "./AnonymousLogin";
 
 interface props {
     exclusive?: boolean;
@@ -312,6 +313,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
 
     return renderChatWrapper(
         <>
+        <AnonymousLogin/>
             <div className="bg-[#1f1f23] p-2 flex items-center">
                 <MessageSquare className="h-4 w-4 mr-2 text-[var(--primary-color)]" />
                 <h3 className="font-bold text-sm text-white">CHAT EN VIVO</h3>

@@ -6,19 +6,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 export function generateUserChatColor(userId: string): string {
-  // Hash tipo DJB2
   let hash = 5381;
   for (let i = 0; i < userId.length; i++) {
     hash = (hash * 33) ^ userId.charCodeAt(i);
   }
   hash = Math.abs(hash);
 
-  // HSL valores vibrantes estilo Twitch
   const hue = hash % 360;
   const saturation = 70 + (hash % 20); // 70–90%
   const lightness = 45 + (hash % 10); // 45–55%
 
-  // Conversión de HSL a RGB (y luego a HEX)
   const s = saturation / 100;
   const l = lightness / 100;
   const k = (n: number) => (n + hue / 30) % 12;

@@ -20,8 +20,7 @@ const handle = app.getRequestHandler();
 interface User {
   id: string;
   name: string;
-  picture?: string;
-  email?: string;
+  email:string;
 }
 
 interface CustomRequest extends Request {
@@ -30,7 +29,7 @@ interface CustomRequest extends Request {
 
 let messages: any[] = [];
 let activeUsers = new Map<string, User>();
-const tokenCache = new Map<string, { user: User; expiresAt: number }>();
+const usersCache = new Map<string, User>();
 
 // JSON persistence
 const dataFilePath = path.join(__dirname, "chat-data.json");
@@ -52,10 +51,7 @@ function loadData() {
       messages = data.messages || [];
       if (Array.isArray(data.tokens)) {
         for (const item of data.tokens) {
-          tokenCache.set(item.token, {
-            user: item.user,
-            expiresAt: item.expiresAt,
-          });
+          usersCache.set(item.token, item.user);
         }
       }
       console.log("✅ Cache persisted");
@@ -67,10 +63,9 @@ function loadData() {
 
 function saveData() {
   try {
-    const tokens = Array.from(tokenCache.entries()).map(([token, value]) => ({
+    const tokens = Array.from(usersCache.entries()).map(([token, value]) => ({
       token,
-      user: value.user,
-      expiresAt: value.expiresAt,
+      user: value
     }));
     const data = { messages, tokens };
     fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), "utf-8");
@@ -92,77 +87,47 @@ app.prepare().then(() => {
 
   expressApp.use(express.json());
 
-  async function verifyFacebookToken(req: CustomRequest, res: Response, next: NextFunction) {
+  async function verifyToken(req: CustomRequest, res: Response, next: NextFunction) {
     const token = req.headers.authorization?.split("Bearer ")[1];
-    if (!token) throw new Error("Token required");
-
-    const cached = tokenCache.get(token);
-    const now = Date.now();
-
-    if (cached && cached.expiresAt > now) {
-      req.user = cached.user;
-      return next();
-    }
-
     try {
-      const debugRes = await fetch(
-        `https://graph.facebook.com/debug_token?input_token=${token}&access_token=${token}`
-      );
-      const debugData = (await debugRes.json()) as FacebookDebugData;
-      const tokenInfo = debugData.data;
-
-      if (!tokenInfo?.is_valid || !tokenInfo.expires_at)
-        throw new Error("Invalid token");
-
-      const fbRes = await fetch(
-        `https://graph.facebook.com/me?fields=id,name,picture,email&access_token=${token}`
-      );
-      const fbUser = (await fbRes.json()) as FacebookUser;
-
-      const userData: User = {
-        id: fbUser.id,
-        name: fbUser.name,
-        picture: fbUser.picture?.data?.url,
-        email: fbUser.email,
-      };
-
-      const tokenExpiration = tokenInfo.expires_at * 1000;
-      const standardExpiration = now + 1800 * 1000;
-      tokenCache.set(token, {
-        user: userData,
-        expiresAt: standardExpiration <= tokenExpiration ? standardExpiration : tokenExpiration,
-      });
-
-      saveData();
-
-      req.user = userData;
-      next();
+      if (!token) throw new Error("Token required");
+      const user = usersCache.get(token);
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        throw new Error("Unauthorized!");
+      }
     } catch (err: any) {
       console.error(err);
       next(err);
     }
   }
 
-  expressApp.post("/api/auth-socket", verifyFacebookToken, async (req: CustomRequest, res: Response) => {
-    const { socketId } = req.body;
-    const user = req.user;
+  expressApp.post("/api/auth-socket", async (req: CustomRequest, res: Response) => {
+    const { socketId, userName, email } = req.body;
     if (!socketId) {
       res.status(400).json({ error: "No socketId specified" })
       return;
     };
 
     const socket = io.sockets.sockets.get(socketId);
-    if (!socket)  {
+    if (!socket) {
       res.status(404).json({ error: "Socket not found" })
       return;
     };
-
+    const user: User = {
+      id: btoa(email.trim().toLowerCase()),
+      name: userName,
+      email: email,
+    }
+    usersCache.set(user.id,user)
     activeUsers.set(socket.id, user!);
     io.emit("active-users", getUniqueActiveUsers().length);
     res.status(200).json({ success: true, user });
   });
 
-  expressApp.post("/api/send-message", verifyFacebookToken, (req: CustomRequest, res: Response) => {
+  expressApp.post("/api/send-message", verifyToken, (req: CustomRequest, res: Response) => {
     const { text, socketId } = req.body;
     const activeUser = activeUsers.get(socketId);
 
@@ -185,7 +150,7 @@ app.prepare().then(() => {
     res.json({ success: true });
   });
 
-  expressApp.post("/api/logout", verifyFacebookToken, (req: CustomRequest, res: Response) => {
+  expressApp.post("/api/logout", verifyToken, (req: CustomRequest, res: Response) => {
     const { socketId } = req.body;
     const activeUser = activeUsers.get(socketId);
     if (activeUser && activeUser.id === req.user?.id) {
