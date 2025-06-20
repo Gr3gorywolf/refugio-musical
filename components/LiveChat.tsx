@@ -5,13 +5,16 @@ import { io, Socket } from "socket.io-client";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, MessageSquare, Maximize2, Minimize2, Facebook, LogOut, Lock } from "lucide-react";
+import { Send, MessageSquare, Maximize2, Minimize2, Facebook, LogOut, Lock, LogIn } from "lucide-react";
 import { StorageFacebookInfo } from "@/types/StorageFacebookInfo";
 import { authWithFacebook } from "@/lib/facebookAuth";
-import { getChat, postAuthSocket, postChatLogout, postChatMessage } from "@/api/endpoints/chatApi";
-import { FB_AUTH_KEY, MAX_CHAT_MESSAGES } from "@/lib/constants";
+import { getChat, postAuthSocket, postChatLogin, postChatLogout, postChatMessage } from "@/api/endpoints/chatApi";
+import { SOCKET_TOKEN, MAX_CHAT_MESSAGES, USER_INFO } from "@/lib/constants";
 import { ChatMessage } from "@/types/ChatMessage";
 import { AnonymousLogin } from "./AnonymousLogin";
+import { LoginCredentials } from "@/types/LoginCredentials";
+import { ChatUser } from "@/types/ChatUser";
+import { useToast } from "@/hooks/useToast";
 
 interface props {
     exclusive?: boolean;
@@ -23,21 +26,34 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
     const [newMessage, setNewMessage] = useState("");
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
-    const [facebookUser, setFacebookUser] = useState<StorageFacebookInfo | null>(null);
+    const [user, setUser] = useState<ChatUser | null>(null);
     const chatContainerRef = useRef<HTMLDivElement>(null);
-    const [isAuthenticating, setIsAuthenticating] = useState(false);
     const [showProfileTooltip, setShowProfileTooltip] = useState(false);
     const [onlineUsers, setOnlineUsers] = useState(0);
     const profileButtonRef = useRef<HTMLButtonElement>(null);
-    const isAuthenticated = !!facebookUser;
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const { toast } = useToast();
+    const isAuthenticated = !!user;
+    const handleSessionExpired = async () => {
+        toast({
+            title: "Sesión expirada",
+            description: "Por favor, inicia sesión nuevamente para continuar.",
+            variant: "destructive",
+        });
+        setUser(null);
+        await handleLogout();
+        setIsFormOpen(true);
+    };
+
     const authSocket = async (socketId: string) => {
         try {
-            const authStore = localStorage.getItem(FB_AUTH_KEY);
-            if (!authStore) {
+            const authStore = localStorage.getItem(SOCKET_TOKEN);
+            const userInfo = localStorage.getItem(USER_INFO);
+            if (!authStore || !userInfo) {
                 throw new Error("No se encontró autenticación de Facebook en localStorage");
             }
             await postAuthSocket(socketId);
-            setFacebookUser(JSON.parse(authStore));
+            setUser(JSON.parse(userInfo));
         } catch (error) {
             console.error("Error al autenticar socket:", error);
         }
@@ -91,8 +107,8 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
         });
         socketRef.current.on("connect", async () => {
             const socketId = socketRef.current?.id;
-            const facebookAuth = localStorage.getItem(FB_AUTH_KEY);
-            if (facebookAuth && socketId) {
+            const socketAuth = localStorage.getItem(SOCKET_TOKEN);
+            if (socketAuth && socketId) {
                 authSocket(socketId);
             }
         });
@@ -105,32 +121,13 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
         };
     }, []);
 
-    const handleFacebookLogin = async () => {
-        setIsAuthenticating(true);
-
-        try {
-            const socketId = socketRef.current?.id;
-            const facebookAuth = await authWithFacebook();
-            localStorage.setItem(FB_AUTH_KEY, JSON.stringify(facebookAuth));
-            if (socketId) {
-                await authSocket(socketId);
-            }
-        } catch (error) {
-            console.error("Error al autenticar con Facebook:", error);
-        } finally {
-            setIsAuthenticating(false);
-        }
-    };
-
     const handleLogout = async () => {
-        setFacebookUser(null);
+        setUser(null);
         setShowProfileTooltip(false);
+        localStorage.setItem(SOCKET_TOKEN, "");
+        localStorage.setItem(USER_INFO, "");
         if (socketRef.current) {
-            postChatLogout(socketRef.current?.id ?? "")
-                .then(() => {
-                    localStorage.setItem(FB_AUTH_KEY, "");
-                })
-                .catch((error) => {});
+            postChatLogout(socketRef.current?.id ?? "");
         }
     };
 
@@ -150,8 +147,16 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
         if (newMessage.trim() === "") return;
         try {
             await postChatMessage(socketRef.current?.id || "", newMessage);
-        } catch (error) {
-            console.error("Error al enviar mensaje:", error);
+        } catch (error: any) {
+            if (error.response?.status === 401) {
+                handleSessionExpired();
+            } else {
+                toast({
+                    title: "Error al enviar mensaje",
+                    description: error.message || "Ocurrió un error al enviar mensaje.",
+                    variant: "destructive",
+                });
+            }
         }
         setNewMessage("");
     };
@@ -164,6 +169,28 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
         setShowProfileTooltip(!showProfileTooltip);
     };
 
+    const handleLogin = async (data: LoginCredentials) => {
+        console.log("Form submitted with data:", data);
+        try {
+            const socketId = socketRef.current?.id;
+            if (socketId) {
+                const res = await postChatLogin(socketId, data.username, data.email);
+                setUser(res.data.user);
+                setIsFormOpen(false);
+                localStorage.setItem(SOCKET_TOKEN, res.data.token);
+                localStorage.setItem(USER_INFO, JSON.stringify(res.data.user));
+            } else {
+                throw new Error("Socket ID is not available");
+            }
+        } catch (err: any) {
+            toast({
+                title: "Error al iniciar sesión",
+                description: err.message || "Ocurrió un error al intentar iniciar sesión.",
+                variant: "destructive",
+            });
+        }
+    };
+
     const renderChatMessages = (ref: React.RefObject<HTMLDivElement>) => (
         <div
             ref={ref}
@@ -173,7 +200,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
             {messages.map((message) => (
                 <div key={message.id} className="leading-tight">
                     <span className="text-gray-400 text-xs mr-1">
-                        {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12:true })}
                     </span>
                     <span style={{ color: message.color }} className="font-semibold">
                         {message.username}:{" "}
@@ -184,20 +211,23 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
         </div>
     );
     const renderProfileTooltip = () => {
-        if (!showProfileTooltip || !facebookUser) return null;
+        if (!showProfileTooltip || !user) return null;
 
         return (
             <div className="absolute bottom-full left-0 mb-2 bg-[#2a2a2a] border border-gray-600 rounded-lg shadow-lg p-3 min-w-[200px] z-10">
                 <div className="flex items-center gap-3 mb-3">
                     <div className="relative h-10 w-10 rounded-full overflow-hidden">
                         <img
-                            src={facebookUser.user.picture.data.url || "/placeholder.svg"}
-                            alt={facebookUser.user.name}
+                            src={`https://ui-avatars.com/api/?&name=${user.name.replace(
+                                " ",
+                                "+"
+                            )}background=f44336&color=fff`}
+                            alt={user.name}
                             className="w-full h-full object-cover"
                         />
                     </div>
                     <div>
-                        <p className="text-white font-medium text-sm">{facebookUser.user.name}</p>
+                        <p className="text-white font-medium text-sm">{user.name}</p>
                         <div className="flex items-center gap-1">
                             <span className="text-[var(--primary-color)] text-xs" title="Usuario verificado">
                                 ✓
@@ -228,22 +258,14 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
                         <span className="text-sm">Autentícate para escribir mensajes</span>
                     </div>
                     <Button
-                        onClick={handleFacebookLogin}
-                        disabled={isAuthenticating}
+                        onClick={() => setIsFormOpen(true)}
                         className="bg-[var(--primary-color)] hover:bg-[var(--primary-color)] text-white font-medium"
                         size="sm"
                     >
-                        {isAuthenticating ? (
-                            <div className="flex items-center gap-2">
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                Conectando...
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                <Facebook className="h-4 w-4" />
-                                Continuar con Facebook
-                            </div>
-                        )}
+                        <div className="flex items-center gap-2">
+                            <LogIn className="h-4 w-4" />
+                            Ingresar
+                        </div>
                     </Button>
                 </div>
             );
@@ -266,8 +288,11 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
                             className="relative h-7 w-7  rounded-full overflow-hidden hover:ring-2 hover:ring-[var(--primary-color)] transition-all"
                         >
                             <img
-                                src={facebookUser.user.picture.data.url || "/placeholder.svg"}
-                                alt={facebookUser.user.name || "Usuario"}
+                                src={`https://ui-avatars.com/api/?&name=${user.name.replace(
+                                    " ",
+                                    "+"
+                                )}background=f44336&color=fff`}
+                                alt={user.name}
                                 className="w-full h-full object-cover"
                             />
                         </button>
@@ -313,7 +338,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
 
     return renderChatWrapper(
         <>
-        <AnonymousLogin/>
+            <AnonymousLogin isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} onSubmit={handleLogin} />
             <div className="bg-[#1f1f23] p-2 flex items-center">
                 <MessageSquare className="h-4 w-4 mr-2 text-[var(--primary-color)]" />
                 <h3 className="font-bold text-sm text-white">CHAT EN VIVO</h3>

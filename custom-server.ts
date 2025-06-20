@@ -5,36 +5,31 @@ import next from "next";
 import { createServer } from "node:http";
 import { Server, Socket } from "socket.io";
 import { parse } from "url";
-import fetch from "node-fetch";
 import fs from "fs";
 import path from "path";
-
-import { FacebookUser } from "./types/FacebookUser";
-import { FacebookDebugData } from "./types/FacebookDebugData";
 import { generateUserChatColor } from "./lib/utils";
-
+import { ChatUser } from "./types/ChatUser";
+import Validator from "validatorjs";
+Validator.useLang('es');
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
-interface User {
-  id: string;
-  name: string;
-  email:string;
-}
 
 interface CustomRequest extends Request {
-  user?: User;
+  user?: ChatUser;
+  token?: string;
 }
 
 let messages: any[] = [];
-let activeUsers = new Map<string, User>();
-const usersCache = new Map<string, User>();
+let activeUsers = new Map<string, ChatUser>();
+const usersCache = new Map<string, ChatUser>();
 
 // JSON persistence
-const dataFilePath = path.join(__dirname, "chat-data.json");
+const messagesFilePath = path.join(__dirname, "chat-data.json");
+const tokensFilePath = path.join(__dirname, "tokens.json");
 function getUniqueActiveUsers() {
-  const uniqueUsers = new Map<string, User>();
+  const uniqueUsers = new Map<string, ChatUser>();
   activeUsers.forEach((user) => {
     if (!uniqueUsers.has(user.id)) {
       uniqueUsers.set(user.id, user);
@@ -45,36 +40,64 @@ function getUniqueActiveUsers() {
 }
 function loadData() {
   try {
-    if (fs.existsSync(dataFilePath)) {
-      const raw = fs.readFileSync(dataFilePath, "utf-8");
+    if (fs.existsSync(messagesFilePath)) {
+      const raw = fs.readFileSync(messagesFilePath, "utf-8");
       const data = JSON.parse(raw);
-      messages = data.messages || [];
-      if (Array.isArray(data.tokens)) {
-        for (const item of data.tokens) {
+      messages = data || [];
+    }
+    if (fs.existsSync(tokensFilePath)) {
+      const raw = fs.readFileSync(tokensFilePath, "utf-8");
+      const data = JSON.parse(raw);
+      if (Array.isArray(data)) {
+        for (const item of data) {
           usersCache.set(item.token, item.user);
         }
       }
-      console.log("✅ Cache persisted");
     }
+    console.log("✅ Cache loaded successfully");
   } catch (err) {
     console.error("❌ Failed to load cache:", err);
   }
 }
 
-function saveData() {
+function saveMessages() {
+  try {
+
+    fs.writeFileSync(messagesFilePath, JSON.stringify(messages, null, 2), "utf-8");
+  } catch (err) {
+    console.error("❌ Failed to save messages:", err);
+  }
+}
+
+function saveTokens() {
   try {
     const tokens = Array.from(usersCache.entries()).map(([token, value]) => ({
       token,
       user: value
     }));
-    const data = { messages, tokens };
-    fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), "utf-8");
+    fs.writeFileSync(tokensFilePath, JSON.stringify(tokens, null, 2), "utf-8");
   } catch (err) {
-    console.error("❌ Failed to save cache:", err);
+    console.error("❌ Failed to save tokens:", err);
   }
 }
 
 loadData();
+
+const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
+setInterval(() => {
+  const now = Date.now();
+  let changed = false;
+  for (const [token, user] of usersCache.entries()) {
+    if (!user.lastLogin || now - user.lastLogin > TWO_DAYS_MS) {
+      usersCache.delete(token);
+      changed = true;
+    }
+  }
+  if (changed) {
+    console.log("🧹 Cleaned up inactive users");
+    saveTokens();
+  }
+}, 60 * 60 * 1000);
 
 app.prepare().then(() => {
   const expressApp = express();
@@ -94,9 +117,11 @@ app.prepare().then(() => {
       const user = usersCache.get(token);
       if (user) {
         req.user = user;
+        req.token = token;
         next();
       } else {
-        throw new Error("Unauthorized!");
+        res.status(401).json({ error: "Unauthorized" });
+        return
       }
     } catch (err: any) {
       console.error(err);
@@ -104,7 +129,7 @@ app.prepare().then(() => {
     }
   }
 
-  expressApp.post("/api/auth-socket", async (req: CustomRequest, res: Response) => {
+  expressApp.post("/api/login", async (req: CustomRequest, res: Response) => {
     const { socketId, userName, email } = req.body;
     if (!socketId) {
       res.status(400).json({ error: "No socketId specified" })
@@ -116,23 +141,64 @@ app.prepare().then(() => {
       res.status(404).json({ error: "Socket not found" })
       return;
     };
-    const user: User = {
-      id: btoa(email.trim().toLowerCase()),
+    const validation = new Validator(req.body, {
+      userName: "required|min:3|max:15",
+      email: "required|email",
+    })
+    if (validation.fails()) {
+      const errors = validation.errors.all();
+      res.status(400).json({ error: "Validation failed", errors });
+      return;
+    }
+    const user: ChatUser = {
+      id: btoa(email.trim().toLowerCase() + userName.trim().toLowerCase()),
       name: userName,
       email: email,
+      lastLogin: Date.now(),
     }
-    usersCache.set(user.id,user)
-    activeUsers.set(socket.id, user!);
+    const token = btoa(`${user.id}:${Date.now()}`);
+    usersCache.set(token, user)
+    activeUsers.set(socket.id, user);
+    saveTokens()
     io.emit("active-users", getUniqueActiveUsers().length);
-    res.status(200).json({ success: true, user });
+    res.status(200).json({ success: true, user, token });
+  });
+
+  expressApp.post("/api/auth-socket", verifyToken, async (req: CustomRequest, res: Response) => {
+    const { socketId } = req.body;
+    if (!socketId) {
+      res.status(400).json({ error: "No socketId specified" })
+      return;
+    };
+
+    const socket = io.sockets.sockets.get(socketId);
+    if (!socket) {
+      res.status(404).json({ error: "Socket not found" })
+      return;
+    };
+    activeUsers.set(socket.id, req.user!);
+    if (req.token && req.user) {
+      usersCache.set(req.token, {
+        ...req.user!,
+        lastLogin: Date.now(),
+      })
+    }
+
+    io.emit("active-users", getUniqueActiveUsers().length);
+    res.status(200).json({ success: true });
   });
 
   expressApp.post("/api/send-message", verifyToken, (req: CustomRequest, res: Response) => {
     const { text, socketId } = req.body;
     const activeUser = activeUsers.get(socketId);
-
-    if (!text) res.status(400).json({ error: "A message must be specified" });
-    if (!activeUser || activeUser.id !== req.user?.id) res.status(403).json({ error: "Unauthorized" });
+    if (!text) {
+      res.status(400).json({ error: "A message must be specified" })
+      return;
+    };
+    if (!activeUser || activeUser.id !== req.user?.id) {
+      res.status(401).json({ error: "Unauthorized" })
+      return;
+    };
 
     const message = {
       id: Date.now().toString(),
@@ -145,7 +211,7 @@ app.prepare().then(() => {
     messages.push(message);
     if (messages.length > 3000) messages.shift();
 
-    saveData();
+    saveMessages();
     io.emit("new-message", message);
     res.json({ success: true });
   });
@@ -155,7 +221,9 @@ app.prepare().then(() => {
     const activeUser = activeUsers.get(socketId);
     if (activeUser && activeUser.id === req.user?.id) {
       activeUsers.delete(socketId);
+      usersCache.delete(req.token!);
       io.emit("active-users", getUniqueActiveUsers().length);
+      saveTokens()
       res.json({ success: true });
     } else {
       res.status(400).json({ error: "User not active or not found" });

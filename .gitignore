@@ -20,6 +20,7 @@ yarn-error.log*
 # env files
 .env*
 chat-data.json
+tokens.json
 # vercel
 .vercel
 

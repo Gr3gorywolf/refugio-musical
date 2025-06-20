@@ -1,4 +1,4 @@
-import { FB_AUTH_KEY } from "@/lib/constants";
+import { SOCKET_TOKEN } from "@/lib/constants";
 import { StorageFacebookInfo } from "@/types/StorageFacebookInfo";
 import { AxiosInstance } from "axios";
 
@@ -6,10 +6,9 @@ export function addFacebookBearerRequestInterceptor(instance: AxiosInstance) {
     instance.interceptors.request.use(
         async (config: any) => {
 
-            const authData = localStorage.getItem(FB_AUTH_KEY);
+            const authData = localStorage.getItem(SOCKET_TOKEN);
             if (authData) {
-                const parsedAuth: StorageFacebookInfo = JSON.parse(authData);
-                config.headers = { ...(config.headers ?? {}), authorization: `Bearer ${parsedAuth.auth.accessToken}` };
+                config.headers = { ...(config.headers ?? {}), authorization: `Bearer ${authData}` };
                 return config;
             }
              return config;

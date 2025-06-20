@@ -11,6 +11,7 @@ import { SongRequest } from "@/components/SongRequestForm";
 import { SongHistoryUpcoming } from "@/components/SongHistoryUpcoming";
 import { useMemo } from "react";
 import { ReactQueryProvider } from "@/components/QueryClientProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Home() {
     const hosts = [
@@ -29,6 +30,7 @@ export default function Home() {
             <ReactQueryProvider>
                 <FloatingPlayer />
             </ReactQueryProvider>
+            <Toaster />
             {/* Header - Adjusted to account for floating player */}
             <header className="block z-10 mt-[68px] bg-[var(--primary-color)] border-b border-none">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
