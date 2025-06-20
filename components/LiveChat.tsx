@@ -21,7 +21,7 @@ interface props {
 }
 
 export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [messages, setMessages] = useState<ChatMessage[] | undefined>([]);
     const socketRef = useRef<Socket>(null);
     const [newMessage, setNewMessage] = useState("");
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -197,7 +197,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
             className="flex-1 overflow-y-auto p-2 space-y-1 text-sm bg-[#0e0e10]"
             style={{ scrollbarWidth: "thin", scrollbarColor: "#333 #0e0e10" }}
         >
-            {messages.map((message) => (
+            {messages?.map((message) => (
                 <div key={message.id} className="leading-tight">
                     <span className="text-gray-400 text-xs mr-1">
                         {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12:true })}

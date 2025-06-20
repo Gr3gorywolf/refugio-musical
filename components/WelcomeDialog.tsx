@@ -94,7 +94,7 @@ export function WelcomeDialog({ onStartPlaying, playingInfo }: WelcomeDialogProp
                 <Button
                     variant="outline"
                     onClick={()=>setIsOpen(false)}
-                    className="flex-1 border-gray-600 text-gray-300 hover:bg-[#424242] hover:text-white bg-transparent mt-[-2rem]  mb-3"
+                    className="flex-1 border-gray-600 text-gray-300 hover:bg-[#424242] hover:text-white bg-transparent mt-[-2rem] md:mt-0  mb-3"
                 >
                     Reproducir mas tarde
                 </Button>
