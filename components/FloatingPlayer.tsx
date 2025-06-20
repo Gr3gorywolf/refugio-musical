@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 import { useNowPlaying } from "@/hooks/useNowPlaying";
+import { WelcomeDialog } from "./WelcomeDialog";
 
 export function FloatingPlayer() {
     const [isPlaying, setIsPlaying] = useState(false);
@@ -11,6 +12,7 @@ export function FloatingPlayer() {
     const [elapsed, setElapsed] = useState(0);
     const { data: nowPlaying } = useNowPlaying();
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const isLive = nowPlaying?.live?.is_live ?? false;
     const playingInfo = useMemo(() => {
@@ -155,6 +157,9 @@ export function FloatingPlayer() {
     useEffect(() => {
         audioRef.current = new Audio(nowPlaying?.station?.listen_url);
         audioRef.current.volume = volume / 100;
+        if(nowPlaying?.station?.listen_url){
+            setShowWelcomeDialog(true);
+        }
 
         return () => {
             if (audioRef.current) {
@@ -172,6 +177,13 @@ export function FloatingPlayer() {
 
     return (
         <>
+            {showWelcomeDialog && <WelcomeDialog onStartPlaying={()=>{
+                if(!isPlaying) {
+                    togglePlayPause();
+                }
+            }} playingInfo={
+                playingInfo
+            }/>}
             <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-800">
                 <div className="flex flex-row gap-2">
                     <div

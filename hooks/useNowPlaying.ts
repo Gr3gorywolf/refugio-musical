@@ -1,4 +1,5 @@
-import { getNowPlaying } from "@/api/endpoints/nowPlayingEndpoints"
+import { getNowPlaying } from "@/api/endpoints/azuracastEndpoints"
+import { NowPlayingResponse } from "@/types/NowPlayingResponse"
 import { useQuery } from "@tanstack/react-query"
 
 export const useNowPlaying = (autoRefetch = true) => {

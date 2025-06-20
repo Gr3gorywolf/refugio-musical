@@ -1,6 +1,6 @@
 "use client";
 
-import { getNowPlaying } from "@/api/endpoints/nowPlayingEndpoints";
+import { getNowPlaying } from "@/api/endpoints/azuracastEndpoints";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNowPlaying } from "@/hooks/useNowPlaying";
 import { formatTime } from "@/lib/dates";
