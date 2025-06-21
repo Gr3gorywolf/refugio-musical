@@ -51,7 +51,7 @@ export function WelcomeDialog({ onStartPlaying, playingInfo }: WelcomeDialogProp
                         <Music className="h-8 w-8 text-[var(--primary-color)]" />
                     </div>
                     <DialogTitle className="text-xl font-bold text-center">
-                        ¡Bienvenido a <span className="text-[var(--primary-color)]">Refugio digital</span>!
+                        ¡Bienvenido a <span className="text-[var(--primary-color)]">Refugio musical</span>!
                     </DialogTitle>
                     <DialogDescription className="text-gray-400">
                         Estamos transmitiendo en vivo. Únete a nuestra comunidad de oyentes.
