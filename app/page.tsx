@@ -12,6 +12,7 @@ import { SongHistoryUpcoming } from "@/components/SongHistoryUpcoming";
 import { useMemo } from "react";
 import { ReactQueryProvider } from "@/components/QueryClientProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { ListenersCount } from "@/components/ListenersCount";
 
 export default function Home() {
     const hosts = [
@@ -21,7 +22,7 @@ export default function Home() {
             role: "Locutor matutino",
             image: "/jose-cabral.jpg?height=200&width=200",
             schedule: "Lunes a Viernes, 6:00 - 10:00",
-            bio: "Con más de 10 años de experiencia en radio, Jose trae energía y buena musica cada dia",
+            bio: "Con más de 30 años de experiencia en radio, Jose trae energía y buena musica cada dia",
         },
     ];
     return (
@@ -45,19 +46,19 @@ export default function Home() {
                         <span className="text-2xl font-bold mt-1">Refugio Musical</span>
                     </div>
                     <nav className="hidden md:flex items-center gap-6">
-                        <Link href="#" className="hover:text-[var(--primary-color)] transition-colors">
+                        <Link href="#" className="hover:scale-105">
                             Inicio
                         </Link>
-                        <Link href="#request" className="hover:text-[var(--primary-color)] transition-colors">
+                        <Link href="#request" className="hover:scale-105">
                             Solicita tu Canción
                         </Link>
-                        <Link href="#songs" className="hover:text-[var(--primary-color)] transition-colors">
+                        <Link href="#songs" className="hover:scale-105">
                             Canciones
                         </Link>
-                        <Link href="#schedule" className="hover:text-[var(--primary-color)] transition-colors">
+                        <Link href="#schedule" className="hover:scale-105">
                             Programación
                         </Link>
-                        <Link href="#hosts" className="hover:text-[var(--primary-color)] transition-colors">
+                        <Link href="#hosts" className="hover:scale-105">
                             Locutores
                         </Link>
                     </nav>
@@ -76,18 +77,25 @@ export default function Home() {
                 </div>
                 <div className="container mx-auto px-4 relative z-1">
                     <div className="grid md:grid-cols-2 gap-8 items-center">
-                        <div className="space-y-6">
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                                Tu <span className="text-[var(--primary-color)]">Radio</span> Favorita En Cualquier Momento
+                        <div className="space-y-4">
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl mt-0 font-bold leading-tight">
+                                <div className="mb-3">
+                                    <ReactQueryProvider>
+                                        <ListenersCount />
+                                    </ReactQueryProvider>
+                                </div>
+                                Tu <span className="text-[var(--primary-color)]">Radio</span> Favorita En Cualquier
+                                Momento
                             </h1>
                             <p className="text-lg text-gray-300 max-w-lg">
                                 Música, entretenimiento y las mejores conversaciones. Sintoniza ahora y sé parte de
                                 nuestra comunidad.
                             </p>
+
                             <div className="flex flex-wrap gap-4">
                                 <Button
                                     variant="outline"
-                                    className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:text-[var(--primary-color)]"
+                                    className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
                                 >
                                     <Link href="#schedule" className="flex items-center b">
                                         <Calendar className="mr-2 h-4 w-4" />
@@ -96,7 +104,7 @@ export default function Home() {
                                 </Button>
                                 <Button
                                     variant="outline"
-                                    className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:text-[var(--primary-color)]"
+                                    className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
                                 >
                                     <Link
                                         href="https://mytunner.com"
@@ -140,7 +148,7 @@ export default function Home() {
                 <div className="container mx-auto px-4">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Ponte  <span className="text-[var(--primary-color)]">Al dia</span>
+                            Ponte <span className="text-[var(--primary-color)]">Al dia</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
                             Explora el historial de canciones reproducidas y descubre las próximas que sonarán en
@@ -201,7 +209,8 @@ export default function Home() {
                             Por Qué <span className="text-[var(--primary-color)]">Elegirnos</span>
                         </h2>
                         <p className="text-gray-300 max-w-2xl mx-auto">
-                            Descubre lo que hace a Refugio Musical la mejor opción para mantenerte entretenido e informado.
+                            Descubre lo que hace a Refugio Musical la mejor opción para mantenerte entretenido e
+                            informado.
                         </p>
                     </div>
 
@@ -277,13 +286,22 @@ export default function Home() {
                                 Tu estación de radio favorita con la mejor música y contenido.
                             </p>
                             <div className="flex gap-4">
-                                <Link href="#" className="text-[var(--primary-color)] hover:text-white transition-colors">
+                                <Link
+                                    href="#"
+                                    className="text-[var(--primary-color)] hover:text-white transition-colors"
+                                >
                                     <Facebook className="h-5 w-5" />
                                 </Link>
-                                <Link href="#" className="text-[var(--primary-color)] hover:text-white transition-colors">
+                                <Link
+                                    href="#"
+                                    className="text-[var(--primary-color)] hover:text-white transition-colors"
+                                >
                                     <Twitter className="h-5 w-5" />
                                 </Link>
-                                <Link href="#" className="text-[var(--primary-color)] hover:text-white transition-colors">
+                                <Link
+                                    href="#"
+                                    className="text-[var(--primary-color)] hover:text-white transition-colors"
+                                >
                                     <Instagram className="h-5 w-5" />
                                 </Link>
                             </div>
@@ -293,7 +311,10 @@ export default function Home() {
                             <h3 className="text-lg font-bold mb-4">Enlaces Rápidos</h3>
                             <ul className="space-y-2">
                                 <li>
-                                    <Link href="#" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
+                                    <Link
+                                        href="#"
+                                        className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"
+                                    >
                                         Inicio
                                     </Link>
                                 </li>

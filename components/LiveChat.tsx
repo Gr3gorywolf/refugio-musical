@@ -9,7 +9,7 @@ import { Send, MessageSquare, Maximize2, Minimize2, Facebook, LogOut, Lock, LogI
 import { StorageFacebookInfo } from "@/types/StorageFacebookInfo";
 import { authWithFacebook } from "@/lib/facebookAuth";
 import { getChat, postAuthSocket, postChatLogin, postChatLogout, postChatMessage } from "@/api/endpoints/chatApi";
-import { SOCKET_TOKEN, MAX_CHAT_MESSAGES, USER_INFO } from "@/lib/constants";
+import { SOCKET_TOKEN_KEY, MAX_CHAT_MESSAGES, USER_INFO_KEY } from "@/lib/constants";
 import { ChatMessage } from "@/types/ChatMessage";
 import { AnonymousLogin } from "./AnonymousLogin";
 import { LoginCredentials } from "@/types/LoginCredentials";
@@ -47,8 +47,8 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
 
     const authSocket = async (socketId: string) => {
         try {
-            const authStore = localStorage.getItem(SOCKET_TOKEN);
-            const userInfo = localStorage.getItem(USER_INFO);
+            const authStore = localStorage.getItem(SOCKET_TOKEN_KEY);
+            const userInfo = localStorage.getItem(USER_INFO_KEY);
             if (!authStore || !userInfo) {
                 throw new Error("No se encontró autenticación de Facebook en localStorage");
             }
@@ -107,7 +107,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
         });
         socketRef.current.on("connect", async () => {
             const socketId = socketRef.current?.id;
-            const socketAuth = localStorage.getItem(SOCKET_TOKEN);
+            const socketAuth = localStorage.getItem(SOCKET_TOKEN_KEY);
             if (socketAuth && socketId) {
                 authSocket(socketId);
             }
@@ -124,8 +124,8 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
     const handleLogout = async () => {
         setUser(null);
         setShowProfileTooltip(false);
-        localStorage.setItem(SOCKET_TOKEN, "");
-        localStorage.setItem(USER_INFO, "");
+        localStorage.setItem(SOCKET_TOKEN_KEY, "");
+        localStorage.setItem(USER_INFO_KEY, "");
         if (socketRef.current) {
             postChatLogout(socketRef.current?.id ?? "");
         }
@@ -177,8 +177,8 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
                 const res = await postChatLogin(socketId, data.username, data.email);
                 setUser(res.data.user);
                 setIsFormOpen(false);
-                localStorage.setItem(SOCKET_TOKEN, res.data.token);
-                localStorage.setItem(USER_INFO, JSON.stringify(res.data.user));
+                localStorage.setItem(SOCKET_TOKEN_KEY, res.data.token);
+                localStorage.setItem(USER_INFO_KEY, JSON.stringify(res.data.user));
             } else {
                 throw new Error("Socket ID is not available");
             }
@@ -304,7 +304,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
                         placeholder="Enviar un mensaje"
                         className="bg-[#18181b] border-gray-700 text-white text-sm h-8 focus-visible:ring-[var(--primary-color)] flex-1"
                     />
-                    <Button type="submit" size="sm" className="bg-[var(--primary-color)] hover:bg-[#0288d1] h-8 px-2">
+                    <Button type="submit" size="sm" className="bg-[var(--primary-color)] text-white hover:scale-105 hover:bg-[var(--primary-color)]  h-8 px-2">
                         <Send className="h-4 w-4" />
                     </Button>
                 </form>

@@ -8,7 +8,7 @@ import { WelcomeDialog } from "./WelcomeDialog";
 
 export function FloatingPlayer() {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(80);
+    const [volume, setVolume] = useState(100);
     const [elapsed, setElapsed] = useState(0);
     const { data: nowPlaying } = useNowPlaying();
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -198,7 +198,7 @@ export function FloatingPlayer() {
                         <div className="flex items-center gap-3">
                             <Button
                                 onClick={togglePlayPause}
-                                className="bg-[var(--primary-color)] hover:bg-[var(--primary-dark-color)] text-white min-h-10  min-w-10 rounded-full p-0"
+                                className="bg-[var(--primary-color)] hover:bg-[var(--primary-dark-color)] hover:scale-110 text-white min-h-10  min-w-10 rounded-full p-0"
                                 aria-label={isPlaying ? "Pausar" : "Reproducir"}
                             >
                                 {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
