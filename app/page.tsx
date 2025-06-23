@@ -3,13 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Radio, Calendar, Headphones, Info, Facebook, Twitter, Instagram } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LiveChat } from "@/components/LiveChat";
 import { FloatingPlayer } from "@/components/FloatingPlayer";
 import { ProgramSchedule } from "@/components/ProgramSchedule";
 import { SongRequest } from "@/components/SongRequestForm";
 import { SongHistoryUpcoming } from "@/components/SongHistoryUpcoming";
-import { useMemo } from "react";
 import { ReactQueryProvider } from "@/components/QueryClientProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { ListenersCount } from "@/components/ListenersCount";
@@ -107,7 +105,7 @@ export default function Home() {
                                     className="border-[var(--primary-color)] bg-white text-[var(--primary-color)] hover:bg-[var(--primary-color)] hover:text-white"
                                 >
                                     <Link
-                                        href="https://mytunner.com"
+                                        href="https://mytuner-radio.com/es/emisora/refugio-musical-513559/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center"
@@ -261,7 +259,7 @@ export default function Home() {
                     </p>
                     <Button className="bg-white text-[var(--primary-color)] hover:bg-white/90">
                         <Link
-                            href="https://mytunner.com"
+                            href="https://mytuner-radio.com/es/emisora/refugio-musical-513559/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center"
@@ -352,7 +350,7 @@ export default function Home() {
                                 </li>
                                 <li>
                                     <Link
-                                        href="https://mytunner.com"
+                                        href="https://mytuner-radio.com/es/emisora/refugio-musical-513559/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-gray-400 hover:text-[var(--primary-color)] transition-colors"

@@ -322,7 +322,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
             return (
                 <div
                     className="fixed inset-0 z-50 bg-[#0e0e10] flex flex-col"
-                    style={{ top: "69px", height: "calc(100vh - 69px)" }}
+                    style={{ top: "68px", height: "calc(100% - 68px)" }}
                 >
                     {children}
                 </div>
