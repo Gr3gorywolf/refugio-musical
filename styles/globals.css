@@ -25,6 +25,11 @@ html { scroll-behavior: smooth; }
 .text-primary {
   color: var(--primary-color) !important;
 }
+
+.player-marquee {
+  @apply animate-marquee-fast whitespace-nowrap;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

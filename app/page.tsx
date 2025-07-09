@@ -82,8 +82,7 @@ export default function Home() {
                                         <ListenersCount />
                                     </ReactQueryProvider>
                                 </div>
-                                Tu <span className="text-[var(--primary-color)]">Radio</span> Favorita En Cualquier
-                                Momento
+                                Desde <span className="text-[var(--primary-color)]"> La Romana</span> para el mundo
                             </h1>
                             <p className="text-lg text-gray-300 max-w-lg">
                                 Música, entretenimiento y las mejores conversaciones. Sintoniza ahora y sé parte de
@@ -281,26 +280,14 @@ export default function Home() {
                                 <span className="text-lg font-bold">Refugio Musical</span>
                             </div>
                             <p className="text-gray-400 mb-4">
-                                Tu estación de radio favorita con la mejor música y contenido.
+                                Desde La Romana para el mundo Refugio Musical con José cabral
                             </p>
                             <div className="flex gap-4">
                                 <Link
-                                    href="#"
+                                    href="https://www.facebook.com/jose2763"
                                     className="text-[var(--primary-color)] hover:text-white transition-colors"
                                 >
                                     <Facebook className="h-5 w-5" />
-                                </Link>
-                                <Link
-                                    href="#"
-                                    className="text-[var(--primary-color)] hover:text-white transition-colors"
-                                >
-                                    <Twitter className="h-5 w-5" />
-                                </Link>
-                                <Link
-                                    href="#"
-                                    className="text-[var(--primary-color)] hover:text-white transition-colors"
-                                >
-                                    <Instagram className="h-5 w-5" />
                                 </Link>
                             </div>
                         </div>
@@ -364,16 +351,15 @@ export default function Home() {
                         <div>
                             <h3 className="text-lg font-bold mb-4">Contacto</h3>
                             <ul className="space-y-2 text-gray-400">
-                                <li>info@radiocabral.com</li>
-                                <li>+123 456 7890</li>
-                                <li>Calle Principal 123, Ciudad</li>
+                                <li>Joseacabral111@gmail.com</li>
+                                <li>La Romana, Republica Dominicana</li>
                             </ul>
                         </div>
 
                         <div>
                             <h3 className="text-lg font-bold mb-4">Horario</h3>
                             <p className="text-gray-400">Transmitiendo 24/7 para ti</p>
-                            <p className="text-gray-400 mt-2">Atención al cliente: Lunes a Viernes, 9:00 - 18:00</p>
+                            <p className="text-gray-400 mt-2">Atención al cliente: Lunes a Viernes, 9:00 am - 10:00 pm</p>
                         </div>
                     </div>
 

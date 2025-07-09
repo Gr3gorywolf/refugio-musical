@@ -5,16 +5,20 @@ import { Slider } from "@/components/ui/slider";
 import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
 import { useNowPlaying } from "@/hooks/useNowPlaying";
 import { WelcomeDialog } from "./WelcomeDialog";
+import { MarqueeText } from "./MarqueeText";
+import { useScreenSize } from "@/hooks/useScreenSize";
 
 export function FloatingPlayer() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(100);
     const [elapsed, setElapsed] = useState(0);
     const { data: nowPlaying } = useNowPlaying();
+    const { screenWidth } = useScreenSize();
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const isLive = nowPlaying?.live?.is_live ?? false;
+    const marqueeWidth = screenWidth - 240;
     const playingInfo = useMemo(() => {
         if (isLive) {
             return {
@@ -212,9 +216,9 @@ export function FloatingPlayer() {
                                 />
                             </div>
 
-                            <div className="flex flex-col">
-                                <span className="font-medium text-sm text-white">{playingInfo.title}</span>
-                                <span className="text-xs text-gray-300">{playingInfo.artist}</span>
+                            <div className="flex flex-col overflow-x-hidden w-auto">
+                                <MarqueeText width={marqueeWidth} className="font-medium text-sm  text-white">{playingInfo.title}</MarqueeText>
+                                <MarqueeText width={marqueeWidth} className="text-xs text-gray-30">{playingInfo.artist}</MarqueeText>
                             </div>
                         </div>
 
