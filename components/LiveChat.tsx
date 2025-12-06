@@ -6,8 +6,6 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, MessageSquare, Maximize2, Minimize2, Facebook, LogOut, Lock, LogIn } from "lucide-react";
-import { StorageFacebookInfo } from "@/types/StorageFacebookInfo";
-import { authWithFacebook } from "@/lib/facebookAuth";
 import { getChat, postAuthSocket, postChatLogin, postChatLogout, postChatMessage } from "@/api/endpoints/chatApi";
 import { SOCKET_TOKEN_KEY, MAX_CHAT_MESSAGES, USER_INFO_KEY } from "@/lib/constants";
 import { ChatMessage } from "@/types/ChatMessage";
@@ -101,7 +99,7 @@ export const LiveChat: React.FC<props> = ({ exclusive = false }) => {
                 return updatedMessages;
             });
         };
-        socketRef.current = io({
+        socketRef.current = io(process.env.NEXT_PUBLIC_CHAT_API_URL, {
             autoConnect: true,
             transports: ["websocket"],
         });

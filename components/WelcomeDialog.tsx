@@ -70,7 +70,7 @@ export function WelcomeDialog({ onStartPlaying, playingInfo }: WelcomeDialogProp
                                     EN VIVO
                                 </span>
                             </div>
-                            <h3 className="font-bold text-white truncate">{playingInfo?.title}</h3>
+                            <h3 className="font-bold text-white truncate text-wrap">{playingInfo?.title}</h3>
                             <p className="text-sm text-gray-300 truncate">{playingInfo?.artist}</p>
                             <p className="text-xs text-[var(--primary-color)] truncate">{playingInfo?.album}</p>
                         </div>

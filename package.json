@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nodemon server.js",
-    "build": "next build ",
-    "start": "NODE_ENV=production ts-node --project tsconfig.server.json custom-server.ts",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "chat-dev": "nodemon chat-api/index.ts",
+    "chat-prod": "NODE_ENV=production ts-node --project tsconfig.chat.json chat-api/index.ts",
     "lint": "next lint"
   },
   "dependencies": {
@@ -44,6 +46,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
+    "cors": "^2.8.5",
     "date-fns": "4.1.0",
     "dotenv": "^16.5.0",
     "embla-carousel-react": "8.5.1",
@@ -70,6 +73,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.2",
     "@types/node": "^22",
     "@types/react": "^19",
@@ -80,6 +84,7 @@
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
+    "tsx": "^4.21.0",
     "typescript": "^5.8.3"
   }
 }

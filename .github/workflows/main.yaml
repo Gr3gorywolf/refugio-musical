@@ -13,22 +13,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use Node.js 20.19
-        uses: actions/setup-node@v2
-        with:
-          node-version: 20.19.0
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Decode .env from base64
-        run: |
-          echo "${{ secrets.ENV }}" | base64 -d > .env
-        shell: bash
-
-      - name: Build Next.js app
-        run: npm run build
-
       - name: Update target repo
         uses: appleboy/ssh-action@master
         with:
@@ -40,15 +24,7 @@ jobs:
             cd ${{ secrets.TARGET_PATH}}
             git pull
             rm -rf .next || true
-      - name: Copy files to VPS
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          source: ".next"
-          target: "${{ secrets.TARGET_PATH }}"
-      - name: Start nextjs app
+      - name: Start chat server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -61,4 +37,4 @@ jobs:
             cd ${{ secrets.TARGET_PATH}}
             nvm use 20.19.0
             pnpm install
-            pm2 delete refugio-musical 2> /dev/null || true && pm2 start npm --name=refugio-musical -- start
+            pm2 delete refugio-musical 2> /dev/null || true && pm2 start npm --name=refugio-musical -- chat-prod

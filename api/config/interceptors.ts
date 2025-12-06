@@ -1,8 +1,7 @@
 import { SOCKET_TOKEN_KEY } from "@/lib/constants";
-import { StorageFacebookInfo } from "@/types/StorageFacebookInfo";
 import { AxiosInstance } from "axios";
 
-export function addFacebookBearerRequestInterceptor(instance: AxiosInstance) {
+export function addChatApiBearerRequestInterceptor(instance: AxiosInstance) {
     instance.interceptors.request.use(
         async (config: any) => {
 
