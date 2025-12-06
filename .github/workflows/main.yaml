@@ -37,4 +37,4 @@ jobs:
             cd ${{ secrets.TARGET_PATH}}
             nvm use 20.19.0
             pnpm install
-            pm2 delete refugio-musical 2> /dev/null || true && pm2 start npm --name=refugio-musical -- chat-prod
+            pm2 delete refugio-musical 2> /dev/null || true && pm2 start npm --name=refugio-musical -- run chat-prod
