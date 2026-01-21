@@ -22,8 +22,12 @@ export function FloatingPlayer() {
     const marqueeWidth = screenWidth - 240;
     const playingInfo = useMemo(() => {
         if (isLive) {
+            var liveSongText = nowPlaying?.now_playing?.song?.text
+                ?.replace(/\([^)]*\)/g, " ")
+                ?.replace(/\[[^\]]*\]/g, " ")
+                ?.replace(/\{[^}]*\}/g, " ");
             return {
-                title: "En vivo",
+                title: "En vivo: " + (liveSongText ?? "En vivo"),
                 artist: nowPlaying?.live?.streamer_name,
                 album: nowPlaying?.station?.name,
                 artwork: nowPlaying?.live?.art || "/placeholder.svg",
@@ -145,7 +149,7 @@ export function FloatingPlayer() {
                 clearInterval(metadataInterval);
             }
         };
-    }, [isPlaying, nowPlaying,isLive, togglePlayPause]);
+    }, [isPlaying, nowPlaying, isLive, togglePlayPause]);
     useEffect(() => {
         if (nowPlaying) {
             progressIntervalRef.current = setInterval(() => {
@@ -162,7 +166,7 @@ export function FloatingPlayer() {
     useEffect(() => {
         audioRef.current = new Audio(nowPlaying?.station?.listen_url);
         audioRef.current.volume = volume / 100;
-        if(nowPlaying?.station?.listen_url){
+        if (nowPlaying?.station?.listen_url) {
             setShowWelcomeDialog(true);
         }
 
@@ -182,13 +186,16 @@ export function FloatingPlayer() {
 
     return (
         <>
-            {showWelcomeDialog && <WelcomeDialog onStartPlaying={()=>{
-                if(!isPlaying) {
-                    togglePlayPause();
-                }
-            }} playingInfo={
-                playingInfo
-            }/>}
+            {showWelcomeDialog && (
+                <WelcomeDialog
+                    onStartPlaying={() => {
+                        if (!isPlaying) {
+                            togglePlayPause();
+                        }
+                    }}
+                    playingInfo={playingInfo}
+                />
+            )}
             <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-gray-800">
                 <div className="flex flex-row gap-2">
                     <div
@@ -218,8 +225,12 @@ export function FloatingPlayer() {
                             </div>
 
                             <div className="flex flex-col overflow-x-hidden w-auto">
-                                <MarqueeText width={marqueeWidth} className="font-medium text-sm  text-white">{playingInfo.title}</MarqueeText>
-                                <MarqueeText width={marqueeWidth} className="text-xs text-gray-30">{playingInfo.artist}</MarqueeText>
+                                <MarqueeText width={marqueeWidth} className="font-medium text-sm  text-white">
+                                    {playingInfo.title}
+                                </MarqueeText>
+                                <MarqueeText width={marqueeWidth} className="text-xs text-gray-30">
+                                    {playingInfo.artist}
+                                </MarqueeText>
                             </div>
                         </div>
 
